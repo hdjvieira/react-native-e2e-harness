@@ -46,8 +46,9 @@ jobs:
 
       - name: Appium and its Android driver
         run: |
-          npm install -g appium@2
-          appium driver install uiautomator2
+          # a pair known to work together; the driver pins the server range it accepts
+          npm install -g appium@3.7.0
+          appium driver install uiautomator2@8.5.2
 
       - name: Let the emulator use KVM
         run: |
