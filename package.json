@@ -1,0 +1,19 @@
+{
+  "name": "react-native-e2e-harness-monorepo",
+  "private": true,
+  "type": "module",
+  "packageManager": "yarn@4.9.2",
+  "engines": {
+    "node": ">=22"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "format": "prettier --write .",
+    "verify": "prettier --check ."
+  },
+  "devDependencies": {
+    "prettier": "3.6.2"
+  }
+}
