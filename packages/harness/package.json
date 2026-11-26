@@ -62,12 +62,12 @@
   "devDependencies": {
     "@types/mocha": "10.0.10",
     "@types/node": "20.19.43",
-    "@wdio/globals": "9.31.3",
-    "@wdio/mocha-framework": "9.32.0",
-    "@wdio/types": "9.32.0",
+    "@wdio/globals": "9.33.1",
+    "@wdio/mocha-framework": "9.33.1",
+    "@wdio/types": "9.33.1",
     "mocha": "10.8.2",
-    "typescript": "6.0.2",
-    "webdriverio": "9.32.0"
+    "typescript": "6.0.3",
+    "webdriverio": "9.33.1"
   },
   "peerDependenciesMeta": {
     "react": {
