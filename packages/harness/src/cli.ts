@@ -8,6 +8,7 @@ import { loadConfig } from './config.js'
 //   sweep              run the app's sweep hook (what tests left on a backend)
 //   tests              list the device tests and their tags
 //   reports [--prune]  each run's release and results, and which can go
+//   dashboard          the local run dashboard, until its window closes
 //   device <cmd>       the app on an Android device, one command at a time
 //   ios-device <cmd>   the app on an iPhone, one command at a time
 //   slow-net ...       a slow or dead network for chosen hosts (Android)
@@ -19,6 +20,7 @@ const USAGE = `usage: e2e-harness <command> [--config <path>]
   sweep               run the app's sweep hook
   tests               the device tests and their tags
   reports [--prune]   each run's release and results, and which can go
+  dashboard           the local run dashboard (keeps running)
   device <cmd>        the app on an Android device (device help)
   ios-device <cmd>    the app on an iPhone (ios-device help)
   slow-net ...        a slow or dead network for chosen hosts on Android`
@@ -33,6 +35,11 @@ async function main(argv: string[]) {
   if (command !== 'slow-net') await loadConfig(configPath)
 
   switch (command) {
+    case 'dashboard': {
+      const { runDashboard } = await import('./dashboard/server.js')
+      runDashboard()
+      return
+    }
     case 'device': {
       const { androidCommand } = await import('./device-cli/android.js')
       process.exitCode = await androidCommand(rest[0], rest.slice(1))

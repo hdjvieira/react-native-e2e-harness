@@ -41,13 +41,14 @@
   },
   "files": [
     "dist",
+    "dashboard",
     "README.md"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "prepack": "yarn build",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test src/*.test.ts src/device-cli/*.test.ts"
+    "test": "tsx --test src/*.test.ts src/device-cli/*.test.ts src/dashboard/*.test.ts"
   },
   "dependencies": {
     "tsx": "4.23.15"

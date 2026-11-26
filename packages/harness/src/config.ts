@@ -132,6 +132,16 @@ export type HarnessConfig = {
   /** where a path given to openLink() points, e.g. `https://example.com` */
   webBase?: string
 
+  /** the local run dashboard (e2e-harness dashboard) */
+  dashboard?: {
+    /** default 4777; E2E_DASHBOARD_PORT overrides */
+    port?: number
+    /** the name in its top bar, e.g. the app's */
+    title?: string
+    /** the app's WebdriverIO config, run by its Run button; default wdio.conf.ts */
+    wdioConfig?: string
+  }
+
   hooks?: {
     /** extra checks before a run; returns notes for the summary, throws to stop it */
     preflight?: (context: PreflightContext) => Promise<string[] | void>
