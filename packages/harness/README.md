@@ -2,7 +2,7 @@
 
 End-to-end tests for React Native apps on Appium and WebdriverIO, with the runner around them: a preflight that gets the device ready or says why it can't, one summary per run, chained tests, a watchdog for a frozen app, clean-up of what tests write, and reports that prune themselves.
 
-> Early days: the core runner is here; the testID helpers, the device CLI and the dashboard are on their way ([roadmap](https://github.com/hdjvieira/react-native-e2e-harness/issues/9)).
+> Early days: the core runner, the testID helpers and the in-app switches are here; the device CLI and the dashboard are on their way ([roadmap](https://github.com/hdjvieira/react-native-e2e-harness/issues/9)).
 
 ## Install
 
@@ -31,6 +31,14 @@ export default defineConfig({
   },
   ios: { bundleId: 'com.example.app', executable: 'Example' },
   mainRef: 'origin/main',
+  // the screen every test starts from, and what to get through on the way
+  home: {
+    ready: 'home-screen',
+    through: ['onboarding-next-button', 'onboarding-done-button'],
+    overlays: ['promo-close-button'],
+  },
+  // the app's dev-only link (see "In the app" below)
+  devLink: { url: 'myapp://e2e' },
 })
 ```
 
@@ -44,11 +52,14 @@ export const config = createWdioConfig(harness)
 
 ```ts
 // e2e/specs/sign-in.e2e.ts
-import { $ } from '@wdio/globals'
+import { restartApp, tap, waitFor } from 'react-native-e2e-harness'
 
 describe('Sign in', () => {
-  it('shows the form', async () => {
-    await $('~login-form').waitForExist()
+  beforeEach(() => restartApp())
+
+  it('opens the form', async () => {
+    await tap('home-sign-in-button')
+    await waitFor('login-form')
   })
 })
 ```
@@ -76,7 +87,56 @@ sequenceDiagram
 
 Everything a run writes goes to `out/<run>/`: `summary.md` to read, plus `run.json`, `results.jsonl`, `events.jsonl`, `timing.jsonl` and the failure artifacts.
 
+## In the app
+
+A restart is fastest as a JS reload: the native app keeps running and the JS starts over, rehydrated from storage like a cold start, in a fraction of the time. The app answers a dev-only link for that, in debug builds only:
+
+```ts
+// at start-up, e.g. index.js
+import AsyncStorage from '@react-native-async-storage/async-storage'
+
+if (__DEV__) {
+  const { createE2ESwitches } = require('react-native-e2e-harness/in-app')
+  createE2ESwitches({
+    url: 'myapp://e2e',
+    storage: AsyncStorage,
+    // your own: flags the app reads, actions it runs
+    flags: { showDebugReadout: { default: false, keepOnReload: true } },
+    actions: { openOrder: id => navigation.navigate('Order', { id }) },
+  })
+}
+```
+
+```mermaid
+flowchart LR
+  T["restartApp()"] --> Q{"debug build,<br/>app in front,<br/>dev link set?"}
+  Q -- yes --> R["myapp://e2e?logbox=off&reload=id<br/>JS reloads, ~2 s"]
+  Q -- no --> C["kill + launch<br/>cold start"]
+  R --> H["walk through home.through,<br/>close home.overlays,<br/>answer permission prompts"]
+  C --> H
+  H --> D["home.ready"]
+```
+
+Built-in switches: `reload=<id>` (once-only), `logbox=off` (LogBox toasts take taps a test can't see), `keyboard=dismiss` (iOS has no reliable way otherwise). Your flags are set with `name=on|off|<value>` and read with the returned `flags`, `useFlag(name)` or `onChange()`; your actions run with the parameter's value. Without a dev link, every restart is a cold start.
+
 ## In a spec
+
+The UI by testID, the same on both platforms:
+
+| Helper                                                    | What for                                                                 |
+| --------------------------------------------------------- | ------------------------------------------------------------------------ |
+| `restartApp({ cold })`                                    | Back to `home`, fresh: reload or cold start                              |
+| `tap(id, { settle })`, `tapUntil(id, opens)`              | Tap; tap again until something opens (iOS drops taps during transitions) |
+| `waitFor`, `waitGone`, `waitForAny`, `exists`             | Wait for testIDs                                                         |
+| `text`, `label`, `onScreen`                               | Read what is shown                                                       |
+| `scrollTo(id, page)`, `swipe`                             | Scroll a page until the element is clear of its edges                    |
+| `allMatching(regex)`, `matchingWithText`, `rowContaining` | Rows by testID pattern and text                                          |
+| `openLink(link)`, `deepLink(url)`                         | Send a link, a path on `webBase` or a full URL                           |
+| `hideKeyboard`, `acceptIosAlert`, `closeShareSheet`       | System UI                                                                |
+| `freshInstall(id)`                                        | Android: wipe the app's data and open it                                 |
+| `markFresh()`                                             | Your sign-in helper left the app fresh: skip the next restart            |
+
+And around the tests:
 
 | Helper                       | What for                                                                                                                                                                                                 |
 | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

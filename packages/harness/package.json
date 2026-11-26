@@ -30,6 +30,10 @@
       "types": "./dist/device.d.ts",
       "default": "./dist/device.js"
     },
+    "./in-app": {
+      "types": "./dist/in-app.d.ts",
+      "default": "./dist/in-app.js"
+    },
     "./package.json": "./package.json"
   },
   "bin": {
@@ -43,7 +47,7 @@
     "build": "tsc -p tsconfig.build.json",
     "prepack": "yarn build",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test src/plan.test.ts src/timing.test.ts src/device.test.ts src/cli.test.ts src/wdio.test.ts src/reports.test.ts"
+    "test": "tsx --test src/*.test.ts"
   },
   "dependencies": {
     "tsx": "4.23.15"
@@ -51,7 +55,9 @@
   "peerDependencies": {
     "@wdio/globals": ">=9",
     "mocha": ">=10",
-    "webdriverio": ">=9"
+    "webdriverio": ">=9",
+    "react": ">=18",
+    "react-native": ">=0.72"
   },
   "devDependencies": {
     "@types/mocha": "10.0.10",
@@ -62,5 +68,13 @@
     "mocha": "10.8.2",
     "typescript": "6.0.2",
     "webdriverio": "9.32.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "react-native": {
+      "optional": true
+    }
   }
 }

@@ -87,6 +87,51 @@ export type HarnessConfig = {
     example?: string
   }
 
+  /**
+   * The app's known starting screen, which restartApp() brings it back to
+   * before a test: how to tell it is there, and what to get through on the
+   * way (onboarding, prompts).
+   */
+  home?: {
+    /** a testID that is only there once the starting screen is ready */
+    ready: string
+    /**
+     * screens on the way, in any order: a testID to tap whenever it shows,
+     * or one with its own way through
+     */
+    through?: (string | { id: string; tap: () => Promise<void> })[]
+    /**
+     * things that can land on top of the starting screen after it showed (a
+     * promo, a rating prompt): the testID of what closes each
+     */
+    overlays?: string[]
+    /**
+     * a testID present whenever the app's UI is up (the root view): how a
+     * restart knows the app is in front and can be reloaded rather than
+     * cold-started. Default `app-root`
+     */
+    root?: string
+    /** runs after every restart, e.g. to put the app in the language specs assert */
+    after?: () => Promise<void>
+    /** longest a restart may take, ms; default 150000 */
+    timeout?: number
+  }
+
+  /**
+   * The app's dev-only link (react-native-e2e-harness/in-app): reloads its JS
+   * between tests instead of a cold start, keeps LogBox out of the way, closes
+   * the keyboard on iOS. Without it every restart is a cold start.
+   */
+  devLink?: {
+    /** e.g. `myapp://e2e`, as passed to createE2ESwitches in the app */
+    url: string
+    /** switches every launch sends, e.g. `mapA11y=off`; `logbox=off` is always sent */
+    launch?: string
+  }
+
+  /** where a path given to openLink() points, e.g. `https://example.com` */
+  webBase?: string
+
   hooks?: {
     /** extra checks before a run; returns notes for the summary, throws to stop it */
     preflight?: (context: PreflightContext) => Promise<string[] | void>
