@@ -8,20 +8,46 @@ import { loadConfig } from './config.js'
 //   sweep              run the app's sweep hook (what tests left on a backend)
 //   tests              list the device tests and their tags
 //   reports [--prune]  each run's release and results, and which can go
+//   device <cmd>       the app on an Android device, one command at a time
+//   ios-device <cmd>   the app on an iPhone, one command at a time
+//   slow-net ...       a slow or dead network for chosen hosts (Android)
 //
 // Run it from the app's e2e folder (where e2e.config.ts is), or pass --config.
 
-const USAGE = `usage: e2e-harness <preflight|sweep|tests|reports [--prune]> [--config <path>]`
+const USAGE = `usage: e2e-harness <command> [--config <path>]
+  preflight           get the device, Appium and Metro ready, or say why not
+  sweep               run the app's sweep hook
+  tests               the device tests and their tags
+  reports [--prune]   each run's release and results, and which can go
+  device <cmd>        the app on an Android device (device help)
+  ios-device <cmd>    the app on an iPhone (ios-device help)
+  slow-net ...        a slow or dead network for chosen hosts on Android`
 
 async function main(argv: string[]) {
+  const at = argv.indexOf('--config')
+  const configPath = at >= 0 ? argv[at + 1] : undefined
+  if (at >= 0) argv = [...argv.slice(0, at), ...argv.slice(at + 2)]
   const [command, ...rest] = argv
-  const at = rest.indexOf('--config')
-  const configPath = at >= 0 ? rest[at + 1] : undefined
   // the app's config is TypeScript
   register()
-  await loadConfig(configPath)
+  if (command !== 'slow-net') await loadConfig(configPath)
 
   switch (command) {
+    case 'device': {
+      const { androidCommand } = await import('./device-cli/android.js')
+      process.exitCode = await androidCommand(rest[0], rest.slice(1))
+      return
+    }
+    case 'ios-device': {
+      const { iosCommand } = await import('./device-cli/ios.js')
+      process.exitCode = await iosCommand(rest[0], rest.slice(1))
+      return
+    }
+    case 'slow-net': {
+      const { slowNet } = await import('./device-cli/slow-net.js')
+      slowNet(rest)
+      return
+    }
     case 'preflight': {
       const { preflight } = await import('./preflight.js')
       const { notes } = await preflight()

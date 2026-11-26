@@ -47,7 +47,7 @@
     "build": "tsc -p tsconfig.build.json",
     "prepack": "yarn build",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test src/*.test.ts"
+    "test": "tsx --test src/*.test.ts src/device-cli/*.test.ts"
   },
   "dependencies": {
     "tsx": "4.23.15"
@@ -55,9 +55,9 @@
   "peerDependencies": {
     "@wdio/globals": ">=9",
     "mocha": ">=10",
-    "webdriverio": ">=9",
     "react": ">=18",
-    "react-native": ">=0.72"
+    "react-native": ">=0.72",
+    "webdriverio": ">=9"
   },
   "devDependencies": {
     "@types/mocha": "10.0.10",
