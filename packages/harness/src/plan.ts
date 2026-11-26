@@ -247,6 +247,18 @@ export function leftOutTags(platform: Platform, kind?: DeviceKind) {
     .map(([tag]) => tag)
 }
 
+/** what the dashboard needs to leave out what a run on a device would */
+export function leftOutByTarget() {
+  const out: Record<Platform, Record<DeviceKind, string[]>> = {
+    android: { device: [], virtual: [] },
+    ios: { device: [], virtual: [] },
+  }
+  for (const platform of ['android', 'ios'] as const)
+    for (const kind of ['device', 'virtual'] as const)
+      out[platform][kind] = leftOutTags(platform, kind)
+  return out
+}
+
 /** the tests a run on this platform (and kind of device, once known) keeps */
 export function forPlatform(
   tests: PlannedTest[],

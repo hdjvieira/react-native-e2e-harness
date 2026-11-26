@@ -16,6 +16,7 @@ import {
   specKey,
   writePlan,
 } from './events.js'
+import { showOnDashboard } from './dashboard-launch.js'
 import { takeNeedsPerson } from './needs-person.js'
 import {
   type DeviceKind,
@@ -243,6 +244,7 @@ export function createWdioConfig(
         }
         console.log(`no plan for this run: ${(e as Error).message}`)
       }
+      await showOnDashboard(stamp)
       emit({ type: 'stage', stage: 'preflight' })
 
       process.env.E2E_RUN_STARTED = `${Date.now()}`
