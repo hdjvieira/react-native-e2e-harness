@@ -2,7 +2,7 @@
 
 End-to-end tests for React Native apps, written against the app's own `testID`s. Appium and WebdriverIO do the driving. This package adds what a team needs around them: helpers that read like the app, a device CLI for one-off checks, a run dashboard with history and flaky-test tracking, chained tests, a watchdog for a frozen app, and a Claude Code skill that runs it all.
 
-> **Status:** being extracted from the test suite of a production React Native app. Nothing is published yet. Progress is tracked in the [issues](../../issues).
+> **Status:** extracted from the test suite of a production React Native app; not published yet. The package and how to use it: [packages/harness](packages/harness). A small app it tests itself against, on an emulator in CI: [example](example). Progress is tracked in the [issues](../../issues).
 
 ## How it fits together
 
