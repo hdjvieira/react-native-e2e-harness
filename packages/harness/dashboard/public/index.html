@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en" data-title="{{TITLE}}">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{TITLE}} e2e</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&display=swap"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script>
+      // before the page paints, so a light-mode choice never flashes dark
+      try {
+        if (localStorage.getItem('e2e-theme') === 'light')
+          document.documentElement.dataset.theme = 'light'
+      } catch {}
+      // the sidebar too: icons only when asked for, or on a narrow window
+      try {
+        document.documentElement.dataset.nav =
+          localStorage.getItem('e2e-nav-collapsed') === 'true' ||
+          matchMedia('(max-width: 1100px)').matches
+            ? 'collapsed'
+            : 'open'
+      } catch {}
+    </script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#overview" title="Overview">
+        <span class="brand-name">{{TITLE}} <b>e2e</b></span>
+        <span class="brand-sub">Local test runs · Appium + WebdriverIO</span>
+      </a>
+      <div class="status-pills" id="status" aria-label="What runs need"></div>
+      <div class="topbar-right">
+        <button id="theme" class="ghost theme" title="Light or dark"></button>
+        <a
+          id="top-run"
+          class="button primary"
+          href="#launch"
+          title="Pick a device and the tests, and start a run"
+          >Run tests</a
+        >
+      </div>
+    </header>
+    <div class="shell">
+      <nav class="nav" aria-label="Pages">
+        <a
+          data-label="Overview"
+          href="#overview"
+          data-page="overview"
+          title="How the app is doing: the run going on, pass rate, devices, recent runs"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="3" y="3" width="7" height="9" rx="1.5" />
+            <rect x="14" y="3" width="7" height="5" rx="1.5" />
+            <rect x="14" y="12" width="7" height="9" rx="1.5" />
+            <rect x="3" y="16" width="7" height="5" rx="1.5" />
+          </svg>
+          <span>Overview</span>
+        </a>
+        <a
+          href="#launch"
+          data-page="launch"
+          data-label="Run tests"
+          title="Pick a device and the tests, and start a run"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="9" />
+            <path d="M10 8.5v7l5.5-3.5z" class="fill" />
+          </svg>
+          <span>Run tests</span>
+          <span class="badge" id="live-badge" hidden>1</span>
+        </a>
+        <a
+          data-label="Run history"
+          href="#history"
+          data-page="history"
+          title="Every run on this machine, newest first"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1" />
+            <path d="M3 4v4.5h4.5" />
+            <path d="M12 7.5V12l3 2" />
+          </svg>
+          <span>Run history</span>
+        </a>
+        <a
+          data-label="Flaky tests"
+          href="#flaky"
+          data-page="flaky"
+          title="Tests that pass and fail by turns, or pass only on their retry"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 15c2.5 0 2.5-6 5-6s2.5 6 5 6 2.5-6 5-6 2 3 3 3" />
+            <path d="M3 20h18" />
+          </svg>
+          <span>Flaky tests</span>
+        </a>
+        <a
+          data-label="Module matrix"
+          href="#matrix"
+          data-page="matrix"
+          title="Each spec file's newest result on each device"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="3" y="3" width="18" height="18" rx="2" />
+            <path d="M3 9h18M3 15h18M9 3v18M15 3v18" />
+          </svg>
+          <span>Module matrix</span>
+        </a>
+        <div class="nav-foot">
+          <label
+            class="follow"
+            data-label="Follow new runs"
+            title="When a new run starts (from here, a terminal or Claude), switch this page to it"
+          >
+            <input type="checkbox" id="follow" checked />
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="7" />
+              <circle cx="12" cy="12" r="2.5" class="fill" />
+              <path d="M12 2v3M12 19v3M2 12h3M19 12h3" />
+            </svg>
+            <span>Follow new runs</span>
+          </label>
+          <button
+            id="notify"
+            class="ghost small"
+            data-label="Notify me when runs end"
+            hidden
+            title="A system notification when each run ends (a sound plays either way)"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z" />
+              <path d="M10 20.5a2 2 0 0 0 4 0" />
+            </svg>
+            <span>Notify me when runs end</span>
+          </button>
+          <button
+            id="nav-toggle"
+            class="ghost small nav-toggle"
+            data-label="Collapse the sidebar"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M14.5 6.5 9 12l5.5 5.5" />
+            </svg>
+            <span>Collapse</span>
+          </button>
+        </div>
+      </nav>
+      <main id="main">
+        <p class="muted center">Loading…</p>
+      </main>
+    </div>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

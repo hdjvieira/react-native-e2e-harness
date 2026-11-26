@@ -2,7 +2,7 @@
 
 End-to-end tests for React Native apps on Appium and WebdriverIO, with the runner around them: a preflight that gets the device ready or says why it can't, one summary per run, chained tests, a watchdog for a frozen app, clean-up of what tests write, and reports that prune themselves.
 
-> Early days: the core runner, the testID helpers, the in-app switches and the device CLI are here; the dashboard is on its way ([roadmap](https://github.com/hdjvieira/react-native-e2e-harness/issues/9)).
+> Early days: every layer is here and unit-tested; it has not yet run against an app on a device from this package ([roadmap](https://github.com/hdjvieira/react-native-e2e-harness/issues/9)).
 
 ## Install
 
@@ -148,6 +148,22 @@ And around the tests:
 
 Tags are `#words` in test titles. `#android`, `#ios`, `#on-android-emulator-only`, `#on-android-device-only`, `#on-ios-simulator-only` and `#on-ios-device-only` decide where a test runs; any other tag can be grepped for.
 
+## Dashboard
+
+A local web page over the run folders: the run going on (with an ETA from past runs), every past run with its failures, screenshots and UI trees, flaky tests, and a module-by-device matrix. It also starts runs: pick tests and a device, queue the next run while one goes on, rerun what failed.
+
+```mermaid
+flowchart LR
+  W["wdio run"] -->|"plan.json, events.jsonl,<br/>results.jsonl, run.json"| O[("out/run/")]
+  W -->|current.json| O
+  O --> S["dashboard server<br/>(e2e-harness dashboard)"]
+  S -->|/api/...| P["page in the browser,<br/>polls every second"]
+  P -->|"Run, Queue, Stop"| S
+  S -->|starts| W
+```
+
+A run opens it by itself: it starts the server in a window of its own when none answers, and opens the page on the run unless one is already open (`E2E_UI=off` leaves it out, and so does CI). Or start it with `npx e2e-harness dashboard`. It listens on port 4777 (`dashboard.port` in the config, or `E2E_DASHBOARD_PORT`); `dashboard.title` names it.
+
 ## Settings and secrets
 
 `.env.e2e` (git-ignored) holds them; `.env.e2e.example` (committed) lists every key with a comment on what it is, under `# [required]` or `# [optional]`. The preflight stops a run when a required key is missing.
@@ -174,6 +190,7 @@ npx e2e-harness preflight          # get the device ready, or say why not
 npx e2e-harness tests              # every device test and its tags
 npx e2e-harness reports [--prune]  # each run's release and results, and which can go
 npx e2e-harness sweep              # run your sweep hook
+npx e2e-harness dashboard          # the run dashboard, until its window closes
 ```
 
 ### One command at a time
