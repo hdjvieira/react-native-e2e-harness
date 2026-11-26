@@ -143,8 +143,7 @@ function runPayload(stamp: string) {
 // the runs boiled down (history.ts): every few seconds at most, as the
 // history above. Ended runs are kept in history.ts until their files change
 let digestCache:
-  | { at: number; digests: ReturnType<typeof readDigests> }
-  | undefined
+  { at: number; digests: ReturnType<typeof readDigests> } | undefined
 function allDigests() {
   if (!digestCache || Date.now() - digestCache.at > 4000) {
     digestCache = { at: Date.now(), digests: readDigests(allTests()) }
