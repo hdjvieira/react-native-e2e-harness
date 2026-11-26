@@ -53,7 +53,13 @@ async function main(argv: string[]) {
       fetchMain()
       const going = new Set(prunable())
       for (const run of runDirs()) {
-        const record = readRun(run)
+        let record: ReturnType<typeof readRun>
+        try {
+          record = readRun(run)
+        } catch (e) {
+          console.log(`keep  ${run}  unreadable: ${(e as Error).message}`)
+          continue
+        }
         const count = (status: string) =>
           record.results.filter(r => r.status === status).length
         console.log(

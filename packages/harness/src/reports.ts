@@ -48,7 +48,17 @@ export type RunInfo = {
   release: string
 }
 
+/**
+ * The version of what a run writes (run.json, results.jsonl, events.jsonl,
+ * the tags in titles). Bump it with any change an older run can't be read
+ * as, and teach readRun to convert the older format: runs outlive releases
+ * of the harness.
+ */
+export const RUN_FORMAT = 1
+
 export type RunRecord = RunInfo & {
+  /** RUN_FORMAT when written; set by writeRun */
+  format?: number
   run: string
   results: { title: string; status: Status }[]
   /** where the run's time went */
@@ -142,9 +152,23 @@ export function resultsOf(dir: string): RunRecord['results'] {
 
 export function readRun(run: string): RunRecord {
   const file = join(config().outDir, run, 'run.json')
-  if (existsSync(file)) return JSON.parse(readFileSync(file, 'utf8'))
+  if (existsSync(file)) {
+    const record = JSON.parse(readFileSync(file, 'utf8')) as RunRecord
+    if (record.format === undefined) {
+      throw new Error(
+        `${run}: run.json has no format: written by something else than this harness`,
+      )
+    }
+    if (record.format > RUN_FORMAT) {
+      throw new Error(
+        `${run}: written by a newer harness (format ${record.format}, this one reads ${RUN_FORMAT}): update react-native-e2e-harness`,
+      )
+    }
+    return record
+  }
   // a run that died before writing it: what its results say, no more
   return {
+    format: RUN_FORMAT,
     run,
     git: {},
     release: '?',
@@ -155,7 +179,7 @@ export function readRun(run: string): RunRecord {
 export function writeRun(record: RunRecord) {
   writeFileSync(
     join(config().outDir, record.run, 'run.json'),
-    JSON.stringify(record, null, 2),
+    JSON.stringify({ ...record, format: RUN_FORMAT }, null, 2),
   )
 }
 
@@ -182,7 +206,14 @@ function specSources() {
  * but its passes count as fixes.
  */
 export function prunable(keep?: string) {
-  const runs = runDirs().map(readRun)
+  // a run this harness can't read is kept, never guessed at
+  const runs = runDirs().flatMap(run => {
+    try {
+      return [readRun(run)]
+    } catch {
+      return []
+    }
+  })
   const sources = specSources()
   const literal = (text: string) =>
     sources.includes(`'${text}'`) ||
