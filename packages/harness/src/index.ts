@@ -20,3 +20,10 @@ export { registerCleanup } from './cleanup.js'
 export { measure, record as recordTiming } from './timing.js'
 export { envValue, optionalEnv } from './env.js'
 export { tagsIn, type PlannedTest } from './plan.js'
+export * from './ui.js'
+export {
+  freshInstall,
+  markFresh,
+  restartApp,
+  tapFirstMatching,
+} from './restart.js'
