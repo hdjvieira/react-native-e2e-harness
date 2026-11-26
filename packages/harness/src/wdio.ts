@@ -390,8 +390,7 @@ export function createWdioConfig(
       // must not speak for the retry running now); the limit is the live one,
       // as this.retries(0) changes it during the body
       const live = (context as Mocha.Context | undefined)?.test as
-        | (Mocha.Test & { currentRetry(): number })
-        | undefined
+        (Mocha.Test & { currentRetry(): number }) | undefined
       const attempt =
         (test as { _currentRetry?: number })._currentRetry ??
         live?.currentRetry() ??

@@ -116,12 +116,7 @@ const platformOf = (
 }
 
 export type RunStatus =
-  | 'running'
-  | 'passed'
-  | 'failed'
-  | 'stopped'
-  | 'lost'
-  | 'preflight'
+  'running' | 'passed' | 'failed' | 'stopped' | 'lost' | 'preflight'
 
 /** a run in one line: what Run history lists and the Overview sums up */
 export type RunSummary = {
@@ -517,9 +512,8 @@ export function matrix(digests: Digest[], tests: PlannedTest[]) {
       const ran = list.filter(
         t => t.status === 'passed' || t.status === 'failed',
       )
-      if (!ran.length)
-        continue
-        // oldest first: a newer run overwrites
+      if (!ran.length) continue
+      // oldest first: a newer run overwrites
       ;(cells[spec] ??= {})[s.device] = {
         run: s.run,
         started: s.started,
