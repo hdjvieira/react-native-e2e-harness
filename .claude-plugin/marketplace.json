@@ -1,0 +1,14 @@
+{
+  "name": "react-native-e2e-harness",
+  "owner": {
+    "name": "Hugo Vieira"
+  },
+  "description": "Claude Code skills for testing React Native apps with react-native-e2e-harness",
+  "plugins": [
+    {
+      "name": "react-native-e2e-harness",
+      "source": "./plugin",
+      "description": "The e2e skill for apps tested with react-native-e2e-harness"
+    }
+  ]
+}

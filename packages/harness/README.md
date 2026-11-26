@@ -164,6 +164,15 @@ flowchart LR
 
 A run opens it by itself: it starts the server in a window of its own when none answers, and opens the page on the run unless one is already open (`E2E_UI=off` leaves it out, and so does CI). Or start it with `npx e2e-harness dashboard`. It listens on port 4777 (`dashboard.port` in the config, or `E2E_DASHBOARD_PORT`); `dashboard.title` names it.
 
+## With Claude Code
+
+The repo is also a Claude Code plugin marketplace with an `e2e` skill: preflight, run specs and report them, write specs after a feature or before a bug fix, check a device one command at a time, with the consent rules (never drive a device unasked, never wipe a phone's data without an OK).
+
+```
+/plugin marketplace add hdjvieira/react-native-e2e-harness
+/plugin install react-native-e2e-harness@react-native-e2e-harness
+```
+
 ## Settings and secrets
 
 `.env.e2e` (git-ignored) holds them; `.env.e2e.example` (committed) lists every key with a comment on what it is, under `# [required]` or `# [optional]`. The preflight stops a run when a required key is missing.
