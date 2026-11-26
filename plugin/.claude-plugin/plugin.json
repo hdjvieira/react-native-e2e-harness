@@ -1,0 +1,8 @@
+{
+  "name": "react-native-e2e-harness",
+  "description": "The e2e skill for apps tested with react-native-e2e-harness: preflight, run specs, read the summary, write specs, check a device one command at a time",
+  "version": "0.1.0",
+  "author": { "name": "Hugo Vieira" },
+  "homepage": "https://github.com/hdjvieira/react-native-e2e-harness",
+  "license": "MIT"
+}

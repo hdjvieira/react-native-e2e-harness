@@ -34,7 +34,7 @@ flowchart LR
 | core         | Runs described as a plan, an event stream per run, Markdown and JSON reports, chained tests that reuse state instead of restarting the app, a "needs a person first" result for steps a machine cannot do, a watchdog that kills and reports a frozen app                                                      |
 | react-native | `tap`, `waitFor`, `scrollTo`, `tapUntil` and friends by `testID`, fresh install and cold restart, keyboard and system-alert handling, Android device and emulator control, physical iPhone support, Metro checks, a slow or failing network on chosen hosts, a CLI for single commands against the running app |
 | dashboard    | A local web page over the run folders: overview, start runs, run history, a page per run, flaky tests, a module-by-device matrix                                                                                                                                                                               |
-| skill        | A Claude Code skill: preflight, run one spec or the suite, read the summary, write a spec after a feature or before a bug fix                                                                                                                                                                                  |
+| skill        | A Claude Code plugin with an `e2e` skill: preflight, run one spec or the suite, read the summary, write a spec after a feature or before a bug fix                                                                                                                                                             |
 
 ## Requirements
 
