@@ -1,0 +1,66 @@
+{
+  "name": "react-native-e2e-harness",
+  "version": "0.0.0",
+  "description": "End-to-end tests for React Native apps by testID: Appium + WebdriverIO runner, device plumbing, reports",
+  "license": "MIT",
+  "author": "Hugo Vieira",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hdjvieira/react-native-e2e-harness.git",
+    "directory": "packages/harness"
+  },
+  "keywords": [
+    "react-native",
+    "e2e",
+    "appium",
+    "webdriverio",
+    "testid",
+    "testing"
+  ],
+  "engines": {
+    "node": ">=20.12"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./device": {
+      "types": "./dist/device.d.ts",
+      "default": "./dist/device.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "e2e-harness": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "prepack": "yarn build",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test src/plan.test.ts src/timing.test.ts src/device.test.ts src/cli.test.ts src/wdio.test.ts"
+  },
+  "dependencies": {
+    "tsx": "4.23.15"
+  },
+  "peerDependencies": {
+    "@wdio/globals": ">=9",
+    "mocha": ">=10",
+    "webdriverio": ">=9"
+  },
+  "devDependencies": {
+    "@types/mocha": "10.0.10",
+    "@types/node": "20.19.43",
+    "@wdio/globals": "9.31.3",
+    "@wdio/mocha-framework": "9.32.0",
+    "@wdio/types": "9.32.0",
+    "mocha": "10.8.2",
+    "typescript": "6.0.2",
+    "webdriverio": "9.32.0"
+  }
+}
