@@ -2,7 +2,7 @@
 
 End-to-end tests for React Native apps on Appium and WebdriverIO, with the runner around them: a preflight that gets the device ready or says why it can't, one summary per run, chained tests, a watchdog for a frozen app, clean-up of what tests write, and reports that prune themselves.
 
-> Early days: the core runner, the testID helpers and the in-app switches are here; the device CLI and the dashboard are on their way ([roadmap](https://github.com/hdjvieira/react-native-e2e-harness/issues/9)).
+> Early days: the core runner, the testID helpers, the in-app switches and the device CLI are here; the dashboard is on its way ([roadmap](https://github.com/hdjvieira/react-native-e2e-harness/issues/9)).
 
 ## Install
 
@@ -175,3 +175,30 @@ npx e2e-harness tests              # every device test and its tags
 npx e2e-harness reports [--prune]  # each run's release and results, and which can go
 npx e2e-harness sweep              # run your sweep hook
 ```
+
+### One command at a time
+
+For a quick check on a device that isn't a spec (yet), by testID rather than by screenshot. Each command is a process of its own; the Appium session is cached between them.
+
+```sh
+npx e2e-harness device preflight            # device, build, which Metro, port reverse
+npx e2e-harness device ids                  # testIDs on screen
+npx e2e-harness device tap login-button --watch 5000 login-spinner
+npx e2e-harness device wait home-screen 20000
+npx e2e-harness device text order-total
+npx e2e-harness device jslog 40 error       # the app's JS log
+npx e2e-harness ios-device start            # an iPhone on a cable
+npx e2e-harness ios-device tap login-button
+```
+
+`device help` and `ios-device help` list every command. Android uses Appium when it runs and falls back to adb; it dismisses React Native's LogBox toasts before each command, so a tap never lands on one.
+
+### A slow network
+
+```sh
+npx e2e-harness slow-net --hosts 'api\.example\.com' --delay 8000 --for 120000
+npx e2e-harness slow-net --hosts 'config' --fail
+npx e2e-harness slow-net --restore          # after a crash left the proxy set
+```
+
+A small HTTPS proxy on your machine, reached through `adb reverse`, holds (or refuses) connections to matching hosts; everything else, Metro included, passes through. It sets the device's global proxy while it runs and puts it back when it stops.
