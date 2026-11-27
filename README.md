@@ -67,6 +67,7 @@ Everything about using it (the config, the helpers, the dashboard, the CLI, what
 
 ## Requirements
 
+- React Native 0.76 or later, new architecture (tested on 0.84); the in-app module needs React 18 or later
 - Node 20.12 or later
 - Appium with the UiAutomator2 (Android) and XCUITest (iOS) drivers
 - An app whose interactive elements carry `testID`s

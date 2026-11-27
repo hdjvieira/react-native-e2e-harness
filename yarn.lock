@@ -7749,7 +7749,7 @@ __metadata:
     webdriverio: "npm:^9.33.1"
   peerDependencies:
     react: ">=18"
-    react-native: ">=0.72"
+    react-native: ">=0.76"
   peerDependenciesMeta:
     react:
       optional: true
