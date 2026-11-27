@@ -133,18 +133,19 @@ Built-in switches: `reload=<id>` (once-only), `logbox=off` (LogBox toasts take t
 
 The UI by testID, the same on both platforms:
 
-| Helper                                                    | What for                                                                 |
-| --------------------------------------------------------- | ------------------------------------------------------------------------ |
-| `restartApp({ cold })`                                    | Back to `home`, fresh: reload or cold start                              |
-| `tap(id, { settle })`, `tapUntil(id, opens)`              | Tap; tap again until something opens (iOS drops taps during transitions) |
-| `waitFor`, `waitGone`, `waitForAny`, `exists`             | Wait for testIDs                                                         |
-| `text`, `label`, `onScreen`                               | Read what is shown                                                       |
-| `scrollTo(id, page)`, `swipe`                             | Scroll a page until the element is clear of its edges                    |
-| `allMatching(regex)`, `matchingWithText`, `rowContaining` | Rows by testID pattern and text                                          |
-| `openLink(link)`, `deepLink(url)`                         | Send a link, a path on `webBase` or a full URL                           |
-| `hideKeyboard`, `acceptIosAlert`, `closeShareSheet`       | System UI                                                                |
-| `freshInstall(id)`                                        | Android: wipe the app's data and open it                                 |
-| `markFresh()`                                             | Your sign-in helper left the app fresh: skip the next restart            |
+| Helper                                                    | What for                                                                                                                                         |
+| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `restartApp({ cold })`                                    | Back to `home`, fresh: reload or cold start                                                                                                      |
+| `tap(id, { settle })`, `tapUntil(id, opens)`              | Tap; tap again until something opens (iOS drops taps during transitions)                                                                         |
+| `waitFor`, `waitGone`, `waitForAny`, `exists`             | Wait for testIDs                                                                                                                                 |
+| `text`, `label`, `onScreen`                               | Read what is shown                                                                                                                               |
+| `scrollTo(id, page, { below, slow })`, `swipe`, `drag`    | Scroll until the element is clear of the edges (a sticky header or a sheet's tabs: `below`; inside a sheet: `slow`, held drags that don't fling) |
+| `collectIds(endId)`                                       | Every testID down a long page in one pass, instead of a scrollTo per row                                                                         |
+| `allMatching(regex)`, `matchingWithText`, `rowContaining` | Rows by testID pattern and text                                                                                                                  |
+| `openLink(link)`, `deepLink(url)`                         | Send a link, a path on `webBase` or a full URL                                                                                                   |
+| `hideKeyboard`, `acceptIosAlert`, `closeShareSheet`       | System UI                                                                                                                                        |
+| `freshInstall(id)`                                        | Android: wipe the app's data and open it                                                                                                         |
+| `markFresh()`                                             | Your sign-in helper left the app fresh: skip the next restart                                                                                    |
 
 And around the tests:
 
