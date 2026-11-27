@@ -6,12 +6,22 @@ End-to-end tests for React Native apps on Appium and WebdriverIO, with the runne
 
 ## Install
 
-While the repo is private, from git:
+One dev dependency: WebdriverIO, its Mocha runner and Mocha come with it. While the repo is private, from git:
 
 ```sh
-yarn add -D "react-native-e2e-harness@github:hdjvieira/react-native-e2e-harness#workspace=react-native-e2e-harness" \
-  webdriverio @wdio/cli @wdio/local-runner @wdio/mocha-framework @wdio/spec-reporter @wdio/globals mocha @types/mocha
+yarn add -D "react-native-e2e-harness@github:hdjvieira/react-native-e2e-harness#workspace=react-native-e2e-harness"
 ```
+
+and one script, with where your e2e config is, in the app's `package.json`:
+
+```json
+{
+  "scripts": { "e2e": "e2e-harness" },
+  "e2e-harness": { "config": "e2e/e2e.config.ts" }
+}
+```
+
+Everything then goes through it: `yarn e2e run`, `yarn e2e preflight`, `yarn e2e device ids`, `yarn e2e dashboard` (see CLI below). Keep the e2e folder's own `tsconfig.json` (Mocha's `describe`/`it` types clash with Jest's) and leave the folder out of the app's.
 
 You also need Appium with the drivers for your platforms (`appium driver install uiautomator2`, `appium driver install xcuitest`). The harness starts Appium itself when it isn't running.
 
@@ -64,7 +74,7 @@ describe('Sign in', () => {
 })
 ```
 
-Run it with `wdio run wdio.conf.ts` from `e2e/`.
+Run it with `yarn e2e run`.
 
 ## What a run does
 
@@ -163,7 +173,7 @@ flowchart LR
   S -->|starts| W
 ```
 
-A run opens it by itself: it starts the server in a window of its own when none answers, and opens the page on the run unless one is already open (`E2E_UI=off` leaves it out, and so does CI). Or start it with `npx e2e-harness dashboard`. It listens on port 4777 (`dashboard.port` in the config, or `E2E_DASHBOARD_PORT`); `dashboard.title` names it, and `dashboard.tags` says what your own tags mean (`{ '#slow': 'Takes minutes' }`), shown when the mouse is on a tag.
+A run opens it by itself: it starts the server in a window of its own when none answers, and opens the page on the run unless one is already open (`E2E_UI=off` leaves it out, and so does CI). Or start it with `yarn e2e dashboard`. It listens on port 4777 (`dashboard.port` in the config, or `E2E_DASHBOARD_PORT`); `dashboard.title` names it, and `dashboard.tags` says what your own tags mean (`{ '#slow': 'Takes minutes' }`), shown when the mouse is on a tag.
 
 ## With Claude Code
 
@@ -193,14 +203,25 @@ The device comes from the environment:
 
 ## CLI
 
+From anywhere in the app, through its `e2e` script (or `npx e2e-harness`):
+
+```sh
+yarn e2e run                                   # every spec
+yarn e2e run --spec specs/login.e2e.ts         # one spec (repeat --spec for more)
+yarn e2e run --grep "#slow" --invert           # leave a tag out (quoted: # starts a shell comment)
+yarn e2e api                                   # the specs that need no device (config api.specs)
+```
+
+Any other option goes to WebdriverIO as it is. The config is found from the current folder, then the app's `package.json` field, then `e2e/` or `__e2eTests__/` beside it; `--config <path>` overrides.
+
 Run from the e2e folder:
 
 ```sh
-npx e2e-harness preflight          # get the device ready, or say why not
-npx e2e-harness tests              # every device test and its tags
-npx e2e-harness reports [--prune]  # each run's release and results, and which can go
-npx e2e-harness sweep              # run your sweep hook
-npx e2e-harness dashboard          # the run dashboard, until its window closes
+yarn e2e preflight          # get the device ready, or say why not
+yarn e2e tests              # every device test and its tags
+yarn e2e reports [--prune]  # each run's release and results, and which can go
+yarn e2e sweep              # run your sweep hook
+yarn e2e dashboard          # the run dashboard, until its window closes
 ```
 
 ### One command at a time
@@ -208,14 +229,14 @@ npx e2e-harness dashboard          # the run dashboard, until its window closes
 For a quick check on a device that isn't a spec (yet), by testID rather than by screenshot. Each command is a process of its own; the Appium session is cached between them.
 
 ```sh
-npx e2e-harness device preflight            # device, build, which Metro, port reverse
-npx e2e-harness device ids                  # testIDs on screen
-npx e2e-harness device tap login-button --watch 5000 login-spinner
-npx e2e-harness device wait home-screen 20000
-npx e2e-harness device text order-total
-npx e2e-harness device jslog 40 error       # the app's JS log
-npx e2e-harness ios-device start            # an iPhone on a cable
-npx e2e-harness ios-device tap login-button
+yarn e2e device preflight            # device, build, which Metro, port reverse
+yarn e2e device ids                  # testIDs on screen
+yarn e2e device tap login-button --watch 5000 login-spinner
+yarn e2e device wait home-screen 20000
+yarn e2e device text order-total
+yarn e2e device jslog 40 error       # the app's JS log
+yarn e2e ios-device start            # an iPhone on a cable
+yarn e2e ios-device tap login-button
 ```
 
 `device help` and `ios-device help` list every command. Android uses Appium when it runs and falls back to adb; it dismisses React Native's LogBox toasts before each command, so a tap never lands on one.
@@ -223,9 +244,9 @@ npx e2e-harness ios-device tap login-button
 ### A slow network
 
 ```sh
-npx e2e-harness slow-net --hosts 'api\.example\.com' --delay 8000 --for 120000
-npx e2e-harness slow-net --hosts 'config' --fail
-npx e2e-harness slow-net --restore          # after a crash left the proxy set
+yarn e2e slow-net --hosts 'api\.example\.com' --delay 8000 --for 120000
+yarn e2e slow-net --hosts 'config' --fail
+yarn e2e slow-net --restore          # after a crash left the proxy set
 ```
 
 A small HTTPS proxy on your machine, reached through `adb reverse`, holds (or refuses) connections to matching hosts; everything else, Metro included, passes through. It sets the device's global proxy while it runs and puts it back when it stops.

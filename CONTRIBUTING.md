@@ -16,7 +16,7 @@ The harness has to work for any React Native app. Nothing specific to one app (i
 
 ## The example app
 
-`example/` is a small React Native app the harness tests itself against: the **Example app on an emulator** workflow builds it and runs `example/e2e/specs` on an Android emulator for every change to the package. A change that affects how the harness drives an app should come with a spec there. To run it locally: install the debug build on an emulator (`yarn workspace e2e-example android`), then `yarn workspace e2e-example e2e`.
+`example/` is a small React Native app the harness tests itself against: the **Example app on an emulator** workflow builds it and runs `example/e2e/specs` on an Android emulator for every change to the package. A change that affects how the harness drives an app should come with a spec there. To run it locally: install the debug build on an emulator (`yarn workspace e2e-example android`), then `yarn workspace e2e-example e2e run`.
 
 ## Code style
 

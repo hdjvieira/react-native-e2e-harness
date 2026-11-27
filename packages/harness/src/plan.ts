@@ -1,7 +1,7 @@
 import { execFileSync } from 'node:child_process'
-import { createRequire } from 'node:module'
-import { join, relative } from 'node:path'
+import { relative } from 'node:path'
 import { config, type Platform } from './config.js'
+import { mochaBin } from './runner.js'
 
 // Which tests exist and which a run will run: Mocha's own dry run over the
 // specs (it registers every describe and it, including those built in loops,
@@ -25,9 +25,7 @@ type DryRun = {
 /** every device test in the specs, minus the config's `exclude` */
 export function discoverTests(): PlannedTest[] {
   const { dir, specs, exclude } = config()
-  const mocha = createRequire(join(dir, 'package.json')).resolve(
-    'mocha/bin/mocha.js',
-  )
+  const mocha = mochaBin()
   const out = execFileSync(
     process.execPath,
     [

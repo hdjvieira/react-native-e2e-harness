@@ -2745,7 +2745,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/mocha@npm:10.0.10, @types/mocha@npm:^10.0.10":
+"@types/mocha@npm:^10.0.10":
   version: 10.0.10
   resolution: "@types/mocha@npm:10.0.10"
   checksum: 10c0/d2b8c48138cde6923493e42b38e839695eb42edd04629abe480a8f34c0e3f50dd82a55832c2e8d2b6e6f9e4deb492d7d733e600fbbdd5a0ceccbcfc6844ff9d5
@@ -2900,7 +2900,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wdio/cli@npm:9.33.1":
+"@wdio/cli@npm:^9.33.1":
   version: 9.33.1
   resolution: "@wdio/cli@npm:9.33.1"
   dependencies:
@@ -2956,7 +2956,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wdio/globals@npm:9.33.1":
+"@wdio/globals@npm:9.33.1, @wdio/globals@npm:^9.33.1":
   version: 9.33.1
   resolution: "@wdio/globals@npm:9.33.1"
   peerDependencies:
@@ -2971,7 +2971,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wdio/local-runner@npm:9.33.1":
+"@wdio/local-runner@npm:^9.33.1":
   version: 9.33.1
   resolution: "@wdio/local-runner@npm:9.33.1"
   dependencies:
@@ -2989,7 +2989,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wdio/logger@npm:9.33.1, @wdio/logger@npm:^9.18.0, @wdio/logger@npm:^9.29.1":
+"@wdio/logger@npm:9.33.1, @wdio/logger@npm:^9.18.0, @wdio/logger@npm:^9.29.1, @wdio/logger@npm:^9.33.1":
   version: 9.33.1
   resolution: "@wdio/logger@npm:9.33.1"
   dependencies:
@@ -3002,7 +3002,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wdio/mocha-framework@npm:9.33.1":
+"@wdio/mocha-framework@npm:^9.33.1":
   version: 9.33.1
   resolution: "@wdio/mocha-framework@npm:9.33.1"
   dependencies:
@@ -3071,7 +3071,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wdio/spec-reporter@npm:9.33.1":
+"@wdio/spec-reporter@npm:^9.33.1":
   version: 9.33.1
   resolution: "@wdio/spec-reporter@npm:9.33.1"
   dependencies:
@@ -4533,20 +4533,12 @@ __metadata:
     "@react-native/babel-preset": "npm:0.84.1"
     "@react-native/metro-config": "npm:0.84.1"
     "@react-native/typescript-config": "npm:0.84.1"
-    "@types/mocha": "npm:10.0.10"
     "@types/node": "npm:20.19.43"
     "@types/react": "npm:^19.2.0"
-    "@wdio/cli": "npm:9.33.1"
-    "@wdio/globals": "npm:9.33.1"
-    "@wdio/local-runner": "npm:9.33.1"
-    "@wdio/mocha-framework": "npm:9.33.1"
-    "@wdio/spec-reporter": "npm:9.33.1"
-    mocha: "npm:10.8.2"
     react: "npm:19.2.3"
     react-native: "npm:0.84.1"
     react-native-e2e-harness: "workspace:*"
     typescript: "npm:^5.8.3"
-    webdriverio: "npm:9.33.1"
   languageName: unknown
   linkType: soft
 
@@ -6921,7 +6913,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mocha@npm:10.8.2, mocha@npm:^10.8.2":
+"mocha@npm:^10.8.2":
   version: 10.8.2
   resolution: "mocha@npm:10.8.2"
   dependencies:
@@ -7694,21 +7686,23 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "react-native-e2e-harness@workspace:packages/harness"
   dependencies:
-    "@types/mocha": "npm:10.0.10"
+    "@types/mocha": "npm:^10.0.10"
     "@types/node": "npm:20.19.43"
-    "@wdio/globals": "npm:9.33.1"
-    "@wdio/mocha-framework": "npm:9.33.1"
+    "@wdio/cli": "npm:^9.33.1"
+    "@wdio/globals": "npm:^9.33.1"
+    "@wdio/local-runner": "npm:^9.33.1"
+    "@wdio/logger": "npm:^9.33.1"
+    "@wdio/mocha-framework": "npm:^9.33.1"
+    "@wdio/spec-reporter": "npm:^9.33.1"
     "@wdio/types": "npm:9.33.1"
-    mocha: "npm:10.8.2"
-    tsx: "npm:4.23.15"
+    expect-webdriverio: "npm:^7.0.1"
+    mocha: "npm:^10.8.2"
+    tsx: "npm:^4.23.15"
     typescript: "npm:6.0.3"
-    webdriverio: "npm:9.33.1"
+    webdriverio: "npm:^9.33.1"
   peerDependencies:
-    "@wdio/globals": ">=9"
-    mocha: ">=10"
     react: ">=18"
     react-native: ">=0.72"
-    webdriverio: ">=9"
   peerDependenciesMeta:
     react:
       optional: true
@@ -8750,7 +8744,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tsx@npm:4.23.15, tsx@npm:^4.7.2":
+"tsx@npm:^4.23.15, tsx@npm:^4.7.2":
   version: 4.23.15
   resolution: "tsx@npm:4.23.15"
   dependencies:
@@ -9053,7 +9047,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webdriverio@npm:9.33.1":
+"webdriverio@npm:9.33.1, webdriverio@npm:^9.33.1":
   version: 9.33.1
   resolution: "webdriverio@npm:9.33.1"
   dependencies:

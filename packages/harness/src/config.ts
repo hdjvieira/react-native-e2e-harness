@@ -1,4 +1,4 @@
-import { existsSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { dirname, isAbsolute, join, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
@@ -132,14 +132,25 @@ export type HarnessConfig = {
   /** where a path given to openLink() points, e.g. `https://example.com` */
   webBase?: string
 
+  /** the app's WebdriverIO config (`e2e-harness run`, the dashboard), relative to `dir`; default wdio.conf.ts */
+  wdioConfig?: string
+
+  /**
+   * specs that need no device (an API the app relies on), run with plain
+   * Mocha by `e2e-harness api`; add their glob to `exclude` too
+   */
+  api?: {
+    specs: string
+    /** per-test timeout, ms; default 60000 */
+    timeout?: number
+  }
+
   /** the local run dashboard (e2e-harness dashboard) */
   dashboard?: {
     /** default 4777; E2E_DASHBOARD_PORT overrides */
     port?: number
     /** the name in its top bar, e.g. the app's */
     title?: string
-    /** the app's WebdriverIO config, run by its Run button; default wdio.conf.ts */
-    wdioConfig?: string
     /** what the app's own tags mean (`#slow`: 'Takes minutes'), shown on their chips */
     tags?: Record<string, string>
   }
@@ -180,6 +191,7 @@ export type ResolvedConfig = Required<
     | 'testTimeout'
     | 'retries'
     | 'freezeMs'
+    | 'wdioConfig'
   >
 > &
   Omit<HarnessConfig, 'metro' | 'appium' | 'env'> & {
@@ -208,6 +220,7 @@ export function defineConfig(config: HarnessConfig): ResolvedConfig {
     testTimeout: config.testTimeout ?? 240000,
     retries: config.retries ?? 1,
     freezeMs: Number(process.env.E2E_FREEZE_MS) || config.freezeMs || 45000,
+    wdioConfig: config.wdioConfig ?? 'wdio.conf.ts',
     appium: { port: config.appium?.port ?? 4723 },
     metro:
       config.metro === false
@@ -256,23 +269,51 @@ export function appId(on: Platform = platform()) {
   return id
 }
 
+const CONFIG_NAMES = [
+  'e2e.config.ts',
+  'e2e.config.mts',
+  'e2e.config.js',
+  'e2e.config.mjs',
+]
+
 /**
- * Loads `e2e.config.ts` (or the path given) for a process that isn't WDIO:
+ * Where the app's config is, looked for from `from` (the current folder):
+ * there; then the nearest package.json's `"e2e-harness": { "config": … }`,
+ * so one `"e2e": "e2e-harness"` script works from the app's root; then the
+ * usual folders (`e2e/`, `__e2eTests__/`) beside that package.json.
+ */
+export function findConfig(from = process.cwd()) {
+  const here = CONFIG_NAMES.map(name => join(from, name)).find(existsSync)
+  if (here) return here
+  for (let dir = resolve(from); ; dir = dirname(dir)) {
+    const manifest = join(dir, 'package.json')
+    if (existsSync(manifest)) {
+      const field = (
+        JSON.parse(readFileSync(manifest, 'utf8')) as {
+          'e2e-harness'?: { config?: string }
+        }
+      )['e2e-harness']?.config
+      if (field) return resolve(dir, field)
+      const usual = ['e2e', '__e2eTests__']
+        .flatMap(folder => CONFIG_NAMES.map(name => join(dir, folder, name)))
+        .find(existsSync)
+      if (usual) return usual
+    }
+    if (dirname(dir) === dir) return undefined
+  }
+}
+
+/**
+ * Loads the app's config (or the path given) for a process that isn't WDIO:
  * the CLI. TypeScript configs need the tsx loader, which the CLI registers.
  */
 export async function loadConfig(path?: string) {
-  const candidates = path
-    ? [resolve(path)]
-    : [
-        'e2e.config.ts',
-        'e2e.config.mts',
-        'e2e.config.js',
-        'e2e.config.mjs',
-      ].map(name => resolve(name))
-  const file = candidates.find(existsSync)
-  if (!file) {
+  const file = path ? resolve(path) : findConfig()
+  if (!file || !existsSync(file)) {
     throw new Error(
-      `no e2e config found (${candidates.map(c => c.replace(/\\/g, '/')).join(', ')})`,
+      path
+        ? `no e2e config at ${path}`
+        : 'no e2e config found: run from the e2e folder, set "e2e-harness": { "config": "<path>" } in package.json, or pass --config',
     )
   }
   const module = (await import(pathToFileURL(file).href)) as {

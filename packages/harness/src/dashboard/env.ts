@@ -1,4 +1,3 @@
-import { existsSync } from 'node:fs'
 import { basename, dirname, extname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { config } from '../config.js'
@@ -15,7 +14,7 @@ export const DASHBOARD_PORT =
   Number(process.env.E2E_DASHBOARD_PORT) || config().dashboard?.port || 4777
 export const TITLE = config().dashboard?.title ?? basename(config().appDir)
 /** the app's WebdriverIO config, run by the dashboard's Run button */
-export const WDIO_CONFIG = config().dashboard?.wdioConfig ?? 'wdio.conf.ts'
+export const WDIO_CONFIG = config().wdioConfig
 /** the app's own tags and what they mean */
 export const APP_TAGS = config().dashboard?.tags ?? {}
 
@@ -35,12 +34,4 @@ export function cliCommand(args: string[]) {
   ]
 }
 
-/** WebdriverIO's launcher, as installed for the app */
-export function wdioBin() {
-  for (let dir = E2E_DIR; ; dir = dirname(dir)) {
-    const bin = join(dir, 'node_modules', '@wdio', 'cli', 'bin', 'wdio.js')
-    if (existsSync(bin)) return bin
-    if (dirname(dir) === dir)
-      throw new Error(`@wdio/cli is not installed for ${E2E_DIR}`)
-  }
-}
+export { wdioBin } from '../runner.js'

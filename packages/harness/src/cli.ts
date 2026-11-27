@@ -4,6 +4,9 @@ import { loadConfig } from './config.js'
 
 // e2e-harness <command> [--config <path>]
 //
+//   run [...]          the specs on a device (--spec, --grep, --invert, or any
+//                      WebdriverIO option)
+//   api                the specs that need no device, with plain Mocha
 //   preflight          get the device, Appium and Metro ready, or say why not
 //   sweep              run the app's sweep hook (what tests left on a backend)
 //   tests              list the device tests and their tags
@@ -13,9 +16,12 @@ import { loadConfig } from './config.js'
 //   ios-device <cmd>   the app on an iPhone, one command at a time
 //   slow-net ...       a slow or dead network for chosen hosts (Android)
 //
-// Run it from the app's e2e folder (where e2e.config.ts is), or pass --config.
+// Run it from anywhere in the app: the config is found from the current folder
+// or the app's package.json ("e2e-harness": { "config": "…" }), or pass --config.
 
 const USAGE = `usage: e2e-harness <command> [--config <path>]
+  run [--spec <file>]... [--grep <re>] [--invert]   run the specs on a device
+  api                 the specs that need no device (config api.specs)
   preflight           get the device, Appium and Metro ready, or say why not
   sweep               run the app's sweep hook
   tests               the device tests and their tags
@@ -35,6 +41,27 @@ async function main(argv: string[]) {
   if (command !== 'slow-net') await loadConfig(configPath)
 
   switch (command) {
+    case 'run': {
+      const { runNode, wdioArgs, wdioBin } = await import('./runner.js')
+      process.exitCode = await runNode([wdioBin(), ...wdioArgs(rest)])
+      return
+    }
+    case 'api': {
+      const { config } = await import('./config.js')
+      const { mochaBin, runNode } = await import('./runner.js')
+      const api = config().api
+      if (!api) throw new Error('no api specs: set api.specs in the e2e config')
+      process.exitCode = await runNode([
+        '--import',
+        import.meta.resolve('tsx'),
+        mochaBin(),
+        '--timeout',
+        String(api.timeout ?? 60000),
+        api.specs,
+        ...rest,
+      ])
+      return
+    }
     case 'dashboard': {
       const { runDashboard } = await import('./dashboard/server.js')
       runDashboard()
