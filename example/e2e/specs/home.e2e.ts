@@ -1,11 +1,13 @@
 import { $, expect } from '@wdio/globals'
 import {
   chain,
+  collectIds,
   deepLink,
   devLink,
   hideKeyboard,
   byId,
   restartApp,
+  scrollTo,
   tap,
   text,
   waitFor,
@@ -61,5 +63,27 @@ describe('Details, chained', () => {
     await tap('back-button')
     await waitGone('details-screen')
     await waitFor('home-screen')
+  })
+})
+
+describe('A long list', () => {
+  beforeEach(async () => {
+    await restartApp()
+    await tap('open-details-button')
+    await tap('open-list-button')
+    await waitFor('list-screen')
+  })
+
+  it('scrolls to a row far below, clear of the header', async () => {
+    const row = await scrollTo('row-35', 'list-screen', {
+      below: 'list-header',
+      slow: true,
+    })
+    expect(await row.getText()).toBe('Row 35')
+  })
+
+  it('reads every row in one pass', async () => {
+    const ids = await collectIds('list-end')
+    for (let row = 0; row < 40; row++) expect(ids.has(`row-${row}`)).toBe(true)
   })
 })
