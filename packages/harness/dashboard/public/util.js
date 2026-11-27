@@ -246,7 +246,13 @@ export const TAGS = {
   '#on-ios-device-only':
     'When running on iOS, only the run on a physical iPhone runs it: a run on a simulator leaves it out by itself. Runs on Android are not affected (E2E_ALL_PLATFORMS=1 keeps it)',
 }
-export const tagTitle = tag => TAGS[tag] ?? `A tag in the test titles (${tag})`
+/** the app's own tags (the config's dashboard.tags), from the server's status */
+const appTags = {}
+export function setAppTags(tags) {
+  Object.assign(appTags, tags ?? {})
+}
+export const tagTitle = tag =>
+  TAGS[tag] ?? appTags[tag] ?? `A tag in the test titles (${tag})`
 export const tagChip = tag =>
   `<span class="tag" title="${esc(tagTitle(tag))}">${esc(tag)}</span>`
 
