@@ -44,14 +44,25 @@ export type HarnessConfig = {
   appDir?: string
 
   android?: {
-    package: string
-    /** default: `<package>.MainActivity` */
+    /**
+     * the application id; per build variant when they differ
+     * (`{ debug: 'com.app.debug', release: 'com.app' }`, picked by
+     * E2E_VARIANT or `variant`)
+     */
+    package: string | Record<string, string>
+    /**
+     * the launch activity; default `<namespace>.MainActivity`. Set it when
+     * the code's package isn't the application id (an id suffix, a flavor)
+     */
     activity?: string
+    /** the code's package (build.gradle `namespace`); default the application id */
+    namespace?: string
     /** runtime permissions granted on an emulator before a run */
     permissions?: string[]
   }
   ios?: {
-    bundleId: string
+    /** the bundle id; per build variant when they differ, like android.package */
+    bundleId: string | Record<string, string>
     /** the app's executable name (`MyApp` for `MyApp.app`), to kill it on a phone */
     executable?: string
     /** Apple team that signs WebDriverAgent for a physical iPhone (or E2E_IOS_TEAM) */
@@ -127,6 +138,17 @@ export type HarnessConfig = {
     url: string
     /** switches every launch sends, e.g. `mapA11y=off`; `logbox=off` is always sent */
     launch?: string
+  }
+
+  /** the build variant tested when app ids differ per variant; E2E_VARIANT overrides; default `debug` */
+  variant?: string
+
+  /** reports besides summary.md: a JUnit XML for CI (default on), or more WebdriverIO reporters */
+  reports?: {
+    /** junit-<worker>.xml in the run folder, which every CI system shows; default true */
+    junit?: boolean
+    /** more WebdriverIO reporters, as its `reporters` option takes them */
+    reporters?: unknown[]
   }
 
   /** where a path given to openLink() points, e.g. `https://example.com` */
@@ -227,7 +249,11 @@ export function defineConfig(config: HarnessConfig): ResolvedConfig {
         ? false
         : {
             port: config.metro?.port ?? 8081,
-            start: config.metro?.start ?? 'npx react-native start',
+            start:
+              config.metro?.start ??
+              defaultMetroStart(
+                config.appDir ? inDir(config.appDir) : resolve(dir, '..'),
+              ),
           },
     env: {
       file: inDir(config.env?.file ?? '.env.e2e'),
@@ -266,7 +292,44 @@ export function appId(on: Platform = platform()) {
   const c = config()
   const id = on === 'android' ? c.android?.package : c.ios?.bundleId
   if (!id) throw new Error(`the config has no ${on} app`)
-  return id
+  if (typeof id === 'string') return id
+  const variant = process.env.E2E_VARIANT || c.variant || 'debug'
+  const picked = id[variant]
+  if (!picked) {
+    throw new Error(
+      `no ${on} app id for the variant "${variant}" (the config has ${Object.keys(id).join(', ')}): set E2E_VARIANT or variant`,
+    )
+  }
+  return picked
+}
+
+/** the Android launch activity: the config's, or MainActivity in the code's package */
+export function androidActivity() {
+  const android = config().android
+  return (
+    android?.activity ??
+    `${android?.namespace ?? appId('android')}.MainActivity`
+  )
+}
+
+/**
+ * The command that starts Metro for this app: the config's, or Expo's for an
+ * Expo app (`expo` in its package.json), else React Native's.
+ */
+function defaultMetroStart(appDir: string) {
+  try {
+    const manifest = JSON.parse(
+      readFileSync(join(appDir, 'package.json'), 'utf8'),
+    ) as {
+      dependencies?: Record<string, string>
+      devDependencies?: Record<string, string>
+    }
+    if (manifest.dependencies?.expo || manifest.devDependencies?.expo)
+      return 'npx expo start --dev-client'
+  } catch {
+    // no package.json to read: React Native's
+  }
+  return 'npx react-native start'
 }
 
 const CONFIG_NAMES = [

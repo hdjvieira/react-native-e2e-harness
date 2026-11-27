@@ -1,7 +1,7 @@
 import { existsSync, readFileSync, unlinkSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { appId, config } from '../config.js'
+import { androidActivity, appId, config } from '../config.js'
 import { metroOwner, servesThisApp } from '../device.js'
 import { AdbSession, adbCli } from './adb-session.js'
 import {
@@ -82,7 +82,7 @@ async function connect(): Promise<AnySession> {
     platformName: 'Android',
     'appium:automationName': 'UiAutomator2',
     'appium:appPackage': pkg,
-    'appium:appActivity': config().android?.activity ?? `${pkg}.MainActivity`,
+    'appium:appActivity': androidActivity(),
     // attach to whatever state the app is in: never reinstall, clear or relaunch
     'appium:noReset': true,
     'appium:dontStopAppOnReset': true,

@@ -1,5 +1,6 @@
-import { $, expect } from '@wdio/globals'
 import {
+  $,
+  expect,
   chain,
   collectIds,
   deepLink,
@@ -9,8 +10,10 @@ import {
   restartApp,
   scrollTo,
   tap,
+  tapLabel,
   text,
   waitFor,
+  waitForText,
   waitGone,
 } from 'react-native-e2e-harness'
 
@@ -31,6 +34,8 @@ describe('Home', () => {
     await $(byId('name-input')).setValue('Ada')
     await hideKeyboard()
     expect(await text('greeting')).toBe('Hello, Ada')
+    // and by what it shows, for an element with no testID
+    await waitForText('Hello, Ada')
   })
 
   it('shows the readout a test turns on', async () => {
@@ -54,8 +59,8 @@ describe('Details, chained', () => {
     },
   }
 
-  flow('opens the details', atHome, async () => {
-    await tap('open-details-button')
+  flow('opens the details, by its label', atHome, async () => {
+    await tapLabel('Open details')
     await waitFor('details-screen')
   })
 

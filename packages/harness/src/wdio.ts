@@ -3,8 +3,16 @@ import { appendFileSync, mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { browser } from '@wdio/globals'
 import { SevereServiceError } from 'webdriverio'
+
+type ReporterEntry = NonNullable<WebdriverIO.Config['reporters']>[number]
 import { runCleanups } from './cleanup.js'
-import { appId, config, platform, type ResolvedConfig } from './config.js'
+import {
+  androidActivity,
+  appId,
+  config,
+  platform,
+  type ResolvedConfig,
+} from './config.js'
 import { iphoneCapabilities, isEmulator } from './device.js'
 import {
   clearCurrentRun,
@@ -179,7 +187,7 @@ function capabilities(c: ResolvedConfig): WebdriverIO.Capabilities {
     platformName: 'Android',
     'appium:automationName': 'UiAutomator2',
     'appium:appPackage': pkg,
-    'appium:appActivity': c.android?.activity ?? `${pkg}.MainActivity`,
+    'appium:appActivity': androidActivity(),
     // never reinstall or clear the app: specs bring it to a known screen themselves
     'appium:noReset': true,
     'appium:autoLaunch': false,
@@ -215,7 +223,24 @@ export function createWdioConfig(
     mochaOpts: { ui: 'bdd', timeout: c.testTimeout, retries: c.retries },
     waitforTimeout: 10000,
     connectionRetryCount: 1,
-    reporters: ['spec'],
+    reporters: [
+      'spec',
+      // every CI system shows JUnit XML; written in the run's own folder (the
+      // workers get E2E_RUN_DIR from the launcher, which sets it as it starts)
+      ...(c.reports?.junit === false
+        ? []
+        : [
+            [
+              'junit',
+              {
+                outputDir: process.env.E2E_RUN_DIR ?? c.outDir,
+                outputFileFormat: (options: { cid: string }) =>
+                  `junit-${options.cid}.xml`,
+              },
+            ] as ReporterEntry,
+          ]),
+      ...((c.reports?.reporters ?? []) as ReporterEntry[]),
+    ],
     ...overrides,
 
     async onPrepare(_config, caps) {
