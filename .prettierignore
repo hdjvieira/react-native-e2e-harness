@@ -3,3 +3,9 @@ node_modules/
 out/
 dist/
 yarn.lock
+example/android/
+example/ios/
+example/node_modules/
+example/e2e/out/
+example/Gemfile
+example/app.json

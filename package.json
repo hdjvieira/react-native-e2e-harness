@@ -7,14 +7,15 @@
     "node": ">=20.12"
   },
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "example"
   ],
   "scripts": {
     "format": "prettier --write .",
     "typecheck": "yarn workspaces foreach -A run typecheck",
     "test": "yarn workspaces foreach -A run test",
     "build": "yarn workspaces foreach -A run build",
-    "verify": "prettier --check . && yarn typecheck && yarn test"
+    "verify": "prettier --check . && yarn build && yarn typecheck && yarn test"
   },
   "devDependencies": {
     "prettier": "3.10.1"

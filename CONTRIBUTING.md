@@ -14,6 +14,10 @@ Pull requests are reviewed with help from an AI assistant. The maintainer merges
 
 The harness has to work for any React Native app. Nothing specific to one app (ids, accounts, hosts, product names) goes into the package; it belongs in the app's own config or helpers.
 
+## The example app
+
+`example/` is a small React Native app the harness tests itself against: the **Example app on an emulator** workflow builds it and runs `example/e2e/specs` on an Android emulator for every change to the package. A change that affects how the harness drives an app should come with a spec there. To run it locally: install the debug build on an emulator (`yarn workspace e2e-example android`), then `yarn workspace e2e-example e2e`.
+
 ## Code style
 
 TypeScript, ESM, Prettier with no semicolons, single quotes and trailing commas. `yarn format` fixes formatting.
