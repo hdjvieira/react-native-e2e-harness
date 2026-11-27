@@ -141,6 +141,8 @@ The UI by testID, the same on both platforms:
 | `text`, `label`, `onScreen`                               | Read what is shown                                                                                                                               |
 | `scrollTo(id, page, { below, slow })`, `swipe`, `drag`    | Scroll until the element is clear of the edges (a sticky header or a sheet's tabs: `below`; inside a sheet: `slow`, held drags that don't fling) |
 | `collectIds(endId)`                                       | Every testID down a long page in one pass, instead of a scrollTo per row                                                                         |
+| `byLabel`, `byText`, `tapLabel`, `tapText`, `waitForText` | For what has no testID (a third-party component, a system screen): by accessibility label or by the text shown                                   |
+| `$`, `$$`, `driver`, `expect`                             | WebdriverIO's own, re-exported: a spec imports from this package alone                                                                           |
 | `allMatching(regex)`, `matchingWithText`, `rowContaining` | Rows by testID pattern and text                                                                                                                  |
 | `openLink(link)`, `deepLink(url)`                         | Send a link, a path on `webBase` or a full URL                                                                                                   |
 | `hideKeyboard`, `acceptIosAlert`, `closeShareSheet`       | System UI                                                                                                                                        |
@@ -183,6 +185,17 @@ The repo is also a Claude Code plugin marketplace with an `e2e` skill: preflight
 /plugin marketplace add hdjvieira/react-native-e2e-harness
 /plugin install react-native-e2e-harness@react-native-e2e-harness
 ```
+
+## Works with
+
+|                  |                                                                                                                                                                                                                |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| React Native     | the CLI's apps and **Expo** with a development build (`expo` in the app's package.json makes Metro start with `npx expo start --dev-client`; Expo Go can't be tested: its app id isn't yours)                  |
+| Package managers | Yarn (node_modules linker), npm, pnpm, bun: specs import everything from `react-native-e2e-harness`, so a strict `node_modules` is fine. Yarn Plug'n'Play is not supported: WebdriverIO needs a `node_modules` |
+| Build variants   | an app id per variant (`android: { package: { debug: 'com.app.debug', release: 'com.app' }, namespace: 'com.app' }`), picked by `E2E_VARIANT` (default `debug`); the same for `ios.bundleId`                   |
+| CI               | every run also writes JUnit XML (`out/<run>/junit-*.xml`) for the CI's test view; `reports: { junit: false, reporters: [...] }` turns it off or adds WebdriverIO reporters                                     |
+| Hosts            | Windows, macOS (iOS needs it), Linux                                                                                                                                                                           |
+| Builds           | debug (fast restarts through the dev link, Metro) and release (cold starts, no Metro)                                                                                                                          |
 
 ## Settings and secrets
 

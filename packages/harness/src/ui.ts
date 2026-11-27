@@ -522,3 +522,53 @@ const shareSheetClosed = (timeout: number) =>
       () => true,
       () => false,
     )
+
+// ---- without a testID --------------------------------------------------------
+//
+// testIDs are the rule. These are for what has none: a third-party component,
+// a system screen.
+
+/** a UiSelector string literal */
+const selectorLiteral = (text: string) => text.replace(/["\\]/g, '\\$&')
+
+/** an element by its accessibility label (Android's content-desc) */
+export function byLabel(label: string) {
+  return driver.isAndroid
+    ? `android=new UiSelector().description("${selectorLiteral(label)}")`
+    : `-ios predicate string:label == '${predicateLiteral(label)}'`
+}
+
+/** an element by the text it shows */
+export function byText(text: string) {
+  return driver.isAndroid
+    ? `android=new UiSelector().text("${selectorLiteral(text)}")`
+    : `-ios predicate string:label == '${predicateLiteral(text)}' OR value == '${predicateLiteral(text)}'`
+}
+
+/** waits for the element with this label and taps it */
+export async function tapLabel(label: string, timeout = 10000) {
+  const target = $(byLabel(label))
+  await target.waitForExist({
+    timeout,
+    timeoutMsg: `nothing labelled "${label}" appeared (${timeout / 1000}s)`,
+  })
+  await target.click()
+}
+
+/** waits for the element showing this text and taps it */
+export async function tapText(text: string, timeout = 10000) {
+  const target = $(byText(text))
+  await target.waitForExist({
+    timeout,
+    timeoutMsg: `nothing showing "${text}" appeared (${timeout / 1000}s)`,
+  })
+  await target.click()
+}
+
+/** waits until something shows this text */
+export async function waitForText(text: string, timeout = 10000) {
+  await $(byText(text)).waitForExist({
+    timeout,
+    timeoutMsg: `"${text}" never appeared (${timeout / 1000}s)`,
+  })
+}

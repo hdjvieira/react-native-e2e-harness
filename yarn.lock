@@ -2971,6 +2971,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@wdio/junit-reporter@npm:^9.33.1":
+  version: 9.33.1
+  resolution: "@wdio/junit-reporter@npm:9.33.1"
+  dependencies:
+    "@wdio/reporter": "npm:9.33.1"
+    "@wdio/types": "npm:9.33.1"
+    json-stringify-safe: "npm:^5.0.1"
+    junit-report-builder: "npm:^5.1.1"
+  checksum: 10c0/f90db4683656d20f979bd85f64b5ff7e7e5dc08871285a7d4dd54994575fbe90df187cb9dad8e6a6a640fa7a982e5d752a98f1ec63756fbfc8bae154e9e7f90c
+  languageName: node
+  linkType: hard
+
 "@wdio/local-runner@npm:^9.33.1":
   version: 9.33.1
   resolution: "@wdio/local-runner@npm:9.33.1"
@@ -6229,6 +6241,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"json-stringify-safe@npm:^5.0.1":
+  version: 5.0.1
+  resolution: "json-stringify-safe@npm:5.0.1"
+  checksum: 10c0/7dbf35cd0411d1d648dceb6d59ce5857ec939e52e4afc37601aa3da611f0987d5cee5b38d58329ceddf3ed48bd7215229c8d52059ab01f2444a338bf24ed0f37
+  languageName: node
+  linkType: hard
+
 "json5@npm:^2.2.3":
   version: 2.2.3
   resolution: "json5@npm:2.2.3"
@@ -6259,6 +6278,17 @@ __metadata:
     readable-stream: "npm:~2.3.6"
     setimmediate: "npm:^1.0.5"
   checksum: 10c0/c51b1473062bb7ac81c0c76047d99a2b56a062f2427ac989e28b46b31ecab636a440f137d15ff6320a961b7e1048c802f0bed83a2e10ed0ba9c2cfd84e818bc6
+  languageName: node
+  linkType: hard
+
+"junit-report-builder@npm:^5.1.1":
+  version: 5.1.2
+  resolution: "junit-report-builder@npm:5.1.2"
+  dependencies:
+    lodash: "npm:^4.18.1"
+    make-dir: "npm:^3.1.0"
+    xmlbuilder: "npm:^15.1.1"
+  checksum: 10c0/013c9e6d73e46792d27b24316b2bc0e2f0314e03e867604ccbc29746771874be433803870b3ab98213d2dd4a64e1e69a5295d000ba497aded4e621bcbb99557f
   languageName: node
   linkType: hard
 
@@ -6415,6 +6445,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash@npm:^4.18.1":
+  version: 4.18.1
+  resolution: "lodash@npm:4.18.1"
+  checksum: 10c0/757228fc68805c59789e82185135cf85f05d0b2d3d54631d680ca79ec21944ec8314d4533639a14b8bcfbd97a517e78960933041a5af17ecb693ec6eecb99a27
+  languageName: node
+  linkType: hard
+
 "log-symbols@npm:^4.1.0":
   version: 4.1.0
   resolution: "log-symbols@npm:4.1.0"
@@ -6492,6 +6529,15 @@ __metadata:
   dependencies:
     "@jridgewell/sourcemap-codec": "npm:^1.5.5"
   checksum: 10c0/299378e38f9a270069fc62358522ddfb44e94244baa0d6a8980ab2a9b2490a1d03b236b447eee309e17eb3bddfa482c61259d47960eb018a904f0ded52780c4a
+  languageName: node
+  linkType: hard
+
+"make-dir@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "make-dir@npm:3.1.0"
+  dependencies:
+    semver: "npm:^6.0.0"
+  checksum: 10c0/56aaafefc49c2dfef02c5c95f9b196c4eb6988040cf2c712185c7fe5c99b4091591a7fc4d4eafaaefa70ff763a26f6ab8c3ff60b9e75ea19876f49b18667ecaa
   languageName: node
   linkType: hard
 
@@ -7690,6 +7736,7 @@ __metadata:
     "@types/node": "npm:20.19.43"
     "@wdio/cli": "npm:^9.33.1"
     "@wdio/globals": "npm:^9.33.1"
+    "@wdio/junit-reporter": "npm:^9.33.1"
     "@wdio/local-runner": "npm:^9.33.1"
     "@wdio/logger": "npm:^9.33.1"
     "@wdio/mocha-framework": "npm:^9.33.1"
@@ -8107,7 +8154,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:^6.3.0, semver@npm:^6.3.1":
+"semver@npm:^6.0.0, semver@npm:^6.3.0, semver@npm:^6.3.1":
   version: 6.3.2
   resolution: "semver@npm:6.3.2"
   bin:
@@ -9241,6 +9288,13 @@ __metadata:
     utf-8-validate:
       optional: true
   checksum: 10c0/1de9b70701c03cdb1b22abd17a1488dc6d22b4dc36a8c32b173d955356ea3634e78aea8ec734a78201dbb34f5a402d9603df32ef267bd477228cd54ae158e2f8
+  languageName: node
+  linkType: hard
+
+"xmlbuilder@npm:^15.1.1":
+  version: 15.1.1
+  resolution: "xmlbuilder@npm:15.1.1"
+  checksum: 10c0/665266a8916498ff8d82b3d46d3993913477a254b98149ff7cff060d9b7cc0db7cf5a3dae99aed92355254a808c0e2e3ec74ad1b04aa1061bdb8dfbea26c18b8
   languageName: node
   linkType: hard
 

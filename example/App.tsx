@@ -67,6 +67,7 @@ export default function App() {
           <Text testID="greeting">{name ? `Hello, ${name}` : ''}</Text>
           <Button
             testID="open-details-button"
+            accessibilityLabel="Open details"
             title="Details"
             onPress={() => setScreen('details')}
           />

@@ -1,3 +1,5 @@
+/// <reference types="mocha" preserve="true" />
+/// <reference types="@wdio/globals/types" preserve="true" />
 // react-native-e2e-harness: the config and the helpers a spec uses.
 // Host-side device plumbing is in `react-native-e2e-harness/device`.
 
@@ -27,3 +29,7 @@ export {
   restartApp,
   tapFirstMatching,
 } from './restart.js'
+
+// WebdriverIO's own, so a spec imports from this package alone (a strict
+// node_modules, pnpm's, keeps the app from reaching the harness's dependencies)
+export { $, $$, browser, driver, expect } from '@wdio/globals'
