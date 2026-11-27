@@ -109,22 +109,7 @@ Run it with `yarn e2e run`.
 
 ## What a run does
 
-```mermaid
-sequenceDiagram
-  participant R as wdio run
-  participant H as harness
-  participant D as device
-  R->>H: onPrepare
-  H->>H: plan: which tests, in what order (Mocha dry run)
-  H->>D: preflight: pick or boot the device, check the app, start Appium and Metro
-  H->>H: sweep (your hook): remove what earlier runs left
-  loop every test
-    H->>D: run it, timing every request (watchdog)
-    H->>H: result line, screenshot + UI tree on failure
-    H->>H: clean-ups the test registered
-  end
-  H->>H: sweep again, summary.md, run.json
-```
+<img src="../../docs/run.svg" alt="Before the tests: plan, preflight, sweep. For every test: run it with every request timed, record the result with a screenshot and UI tree on failure, clean up. After: sweep again and write out/run/" width="900">
 
 Everything a run writes goes to `out/<run>/`: `summary.md` to read, plus `run.json`, `results.jsonl`, `events.jsonl`, `timing.jsonl` and the failure artifacts.
 
@@ -148,15 +133,7 @@ if (__DEV__) {
 }
 ```
 
-```mermaid
-flowchart LR
-  T["restartApp()"] --> Q{"debug build,<br/>app in front,<br/>dev link set?"}
-  Q -- yes --> R["myapp://e2e?logbox=off&reload=id<br/>JS reloads, ~2 s"]
-  Q -- no --> C["kill + launch<br/>cold start"]
-  R --> H["walk through home.through,<br/>close home.overlays,<br/>answer permission prompts"]
-  C --> H
-  H --> D["home.ready"]
-```
+<img src="../../docs/restart.svg" alt="restartApp: a JS reload through the dev link in a debug build with the app in front, else a cold start; then through home.through, home.overlays and permission prompts to home.ready" width="900">
 
 Built-in switches: `reload=<id>` (once-only), `logbox=off` (LogBox toasts take taps a test can't see), `keyboard=dismiss` (iOS has no reliable way otherwise). Your flags are set with `name=on|off|<value>` and read with the returned `flags`, `useFlag(name)` or `onChange()`; your actions run with the parameter's value. Without a dev link, every restart is a cold start.
 
@@ -196,15 +173,7 @@ Tags are `#words` in test titles. `#android`, `#ios`, `#on-android-emulator-only
 
 A local web page over the run folders: the run going on (with an ETA from past runs), every past run with its failures, screenshots and UI trees, flaky tests, and a module-by-device matrix. It also starts runs: pick tests and a device, queue the next run while one goes on, rerun what failed.
 
-```mermaid
-flowchart LR
-  W["wdio run"] -->|"plan.json, events.jsonl,<br/>results.jsonl, run.json"| O[("out/run/")]
-  W -->|current.json| O
-  O --> S["dashboard server<br/>(e2e-harness dashboard)"]
-  S -->|/api/...| P["page in the browser,<br/>polls every second"]
-  P -->|"Run, Queue, Stop"| S
-  S -->|starts| W
-```
+<img src="../../docs/dashboard.svg" alt="A run writes its files into out/, the dashboard server reads them and answers the page, which polls every second; Run, Queue and Stop go back to the server, which starts runs" width="900">
 
 A run opens it by itself: it starts the server in a window of its own when none answers, and opens the page on the run unless one is already open (`E2E_UI=off` leaves it out, and so does CI). Or start it with `yarn e2e dashboard`. It listens on port 4777 (`dashboard.port` in the config, or `E2E_DASHBOARD_PORT`); `dashboard.title` names it, and `dashboard.tags` says what your own tags mean (`{ '#slow': 'Takes minutes' }`), shown when the mouse is on a tag.
 

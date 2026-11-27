@@ -30,7 +30,7 @@ GitHub issues are the backlog. When work leaves a gap behind (a missing feature,
 
 ## Docs
 
-Show, don't just tell: use Mermaid diagrams (they render on GitHub) for flows, architecture and sequences, and keep prose for what a picture can't say.
+Show, don't just tell: flows, architecture and sequences as SVG diagrams in `docs/`, in the style of `docs/architecture.svg` (its `<style>` block: light colours, dark ones under prefers-color-scheme, so they follow GitHub's theme), shown with an `<img>` that has a full `alt`. Not Mermaid: GitHub wraps it in a viewer with buttons. Render a new diagram in both themes (headless Chrome) and look at it before committing. Prose for what a picture can't say.
 
 ## The AI runbook
 
