@@ -2,30 +2,61 @@
 
 End-to-end tests for React Native apps on Appium and WebdriverIO, with the runner around them: a preflight that gets the device ready or says why it can't, one summary per run, chained tests, a watchdog for a frozen app, clean-up of what tests write, and reports that prune themselves.
 
-> Early days: every layer is here and unit-tested; it has not yet run against an app on a device from this package ([roadmap](https://github.com/hdjvieira/react-native-e2e-harness/issues/9)).
+> Not on npm yet: install it from GitHub (below). An example app runs its specs with it on an Android emulator in CI ([roadmap](https://github.com/hdjvieira/react-native-e2e-harness/issues/9)).
 
-## Install
+## Quick start
 
-One dev dependency: WebdriverIO, its Mocha runner and Mocha come with it. While the repo is private, from git:
+1. **Install** it as a dev dependency (it brings WebdriverIO and Mocha with it), and Appium once per machine:
 
-```sh
-yarn add -D "react-native-e2e-harness@github:hdjvieira/react-native-e2e-harness#workspace=react-native-e2e-harness"
+   ```sh
+   yarn add -D "react-native-e2e-harness@github:hdjvieira/react-native-e2e-harness#workspace=react-native-e2e-harness"
+   npm install -g appium && appium driver install uiautomator2   # iOS too: appium driver install xcuitest
+   ```
+
+   (npm, pnpm and bun work the same. Until the first release, the package comes from this repo.)
+
+2. **Set it up** in the app's root. `init` reads your app ids from the native projects (or Expo's `app.json`), creates the `e2e/` folder and adds one script:
+
+   ```sh
+   npx e2e-harness init
+   ```
+
+3. **Point it at your start screen:** in `e2e/e2e.config.ts`, set `home.ready` to a testID that is only there once your first screen is ready.
+
+4. **Run** on an emulator or a connected phone, with a debug build of the app installed:
+
+   ```sh
+   yarn e2e preflight   # the device, the app, Appium and Metro ready, or why not
+   yarn e2e run         # the specs; the summary is in e2e/out/<run>/summary.md
+   ```
+
+5. **Optional:** fast restarts (a JS reload instead of a cold start) with the [in-app switches](#in-the-app), and the runbook for your AI assistant: `yarn e2e ai --tool claude|agents|cursor|copilot`.
+
+## What it adds to your project
+
+```
+your-app/
+├── package.json        + 1 devDependency, 1 script ("e2e"), 1 field ("e2e-harness")
+├── App.tsx             + optional: createE2ESwitches(...), debug builds only
+└── e2e/                new; commit it
+    ├── e2e.config.ts   app ids, start screen, hooks into your support code
+    ├── wdio.conf.ts    one line
+    ├── tsconfig.json   its own: Mocha's types, kept apart from the app's Jest
+    ├── .env.e2e.example    the settings and secrets a run needs (committed)
+    ├── .env.e2e        your values (git-ignored)
+    ├── specs/          your tests: *.e2e.ts
+    ├── support/        your helpers: sign-in, your backend, clean-ups, screen helpers
+    └── out/            written by runs (git-ignored): summary.md, JUnit XML,
+                        screenshots and UI trees of failures, logs
 ```
 
-and one script, with where your e2e config is, in the app's `package.json`:
+Nothing native, nothing in a release bundle (the in-app module only loads under `__DEV__`), nothing installed on the device but your app. Appium is installed globally by you. `slow-net` sets the device's proxy only while it runs.
 
-```json
-{
-  "scripts": { "e2e": "e2e-harness" },
-  "e2e-harness": { "config": "e2e/e2e.config.ts" }
-}
-```
+**See it working:** [`example/`](https://github.com/hdjvieira/react-native-e2e-harness/tree/main/example) is a small React Native app tested this way, its specs green on an Android emulator in CI for every change: [`example/e2e/`](https://github.com/hdjvieira/react-native-e2e-harness/tree/main/example/e2e) is a complete e2e folder to copy from.
 
-Everything then goes through it: `yarn e2e run`, `yarn e2e preflight`, `yarn e2e device ids`, `yarn e2e dashboard` (see CLI below). Keep the e2e folder's own `tsconfig.json` (Mocha's `describe`/`it` types clash with Jest's) and leave the folder out of the app's.
+## Set up by hand
 
-You also need Appium with the drivers for your platforms (`appium driver install uiautomator2`, `appium driver install xcuitest`). The harness starts Appium itself when it isn't running.
-
-## Set up
+What `init` writes, if you would rather write it yourself:
 
 An `e2e/` folder in the app with three files:
 
@@ -177,9 +208,18 @@ flowchart LR
 
 A run opens it by itself: it starts the server in a window of its own when none answers, and opens the page on the run unless one is already open (`E2E_UI=off` leaves it out, and so does CI). Or start it with `yarn e2e dashboard`. It listens on port 4777 (`dashboard.port` in the config, or `E2E_DASHBOARD_PORT`); `dashboard.title` names it, and `dashboard.tags` says what your own tags mean (`{ '#slow': 'Takes minutes' }`), shown when the mouse is on a tag.
 
-## With Claude Code
+## With an AI assistant
 
-The repo is also a Claude Code plugin marketplace with an `e2e` skill: preflight, run specs and report them, write specs after a feature or before a bug fix, check a device one command at a time, with the consent rules (never drive a device unasked, never wipe a phone's data without an OK).
+The e2e runbook (consent rules: never drive a device unasked, never wipe a phone's data without an OK; preflight, running and reporting, writing specs, ad-hoc device checks, the traps) comes for the main coding assistants, from one source:
+
+```sh
+yarn e2e ai --tool claude     # .claude/skills/e2e/SKILL.md, a Claude Code skill
+yarn e2e ai --tool agents     # a section of AGENTS.md: Codex, Cursor, Copilot's agent, Gemini CLI and others
+yarn e2e ai --tool cursor     # .cursor/rules/e2e.mdc
+yarn e2e ai --tool copilot    # .github/instructions/e2e.instructions.md
+```
+
+Run it again after updating the harness: it replaces what it wrote before, and in `AGENTS.md` only its own section. Claude Code users can also install it as a plugin, which updates itself:
 
 ```
 /plugin marketplace add hdjvieira/react-native-e2e-harness

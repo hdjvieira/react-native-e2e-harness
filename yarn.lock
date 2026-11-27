@@ -2752,7 +2752,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*":
+"@types/node@npm:*, @types/node@npm:>=20.12":
   version: 26.6.11
   resolution: "@types/node@npm:26.6.11"
   dependencies:
@@ -7733,7 +7733,7 @@ __metadata:
   resolution: "react-native-e2e-harness@workspace:packages/harness"
   dependencies:
     "@types/mocha": "npm:^10.0.10"
-    "@types/node": "npm:20.19.43"
+    "@types/node": "npm:>=20.12"
     "@wdio/cli": "npm:^9.33.1"
     "@wdio/globals": "npm:^9.33.1"
     "@wdio/junit-reporter": "npm:^9.33.1"

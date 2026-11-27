@@ -1,3 +1,4 @@
+/// <reference types="node" preserve="true" />
 /// <reference types="mocha" preserve="true" />
 /// <reference types="@wdio/globals/types" preserve="true" />
 // react-native-e2e-harness: the config and the helpers a spec uses.
