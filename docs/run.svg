@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 250" width="960" height="250" role="img" aria-labelledby="title desc">
+  <title id="title">What a run does</title>
+  <desc id="desc">Before the tests: plan, preflight, sweep. For every test: run it with the watchdog, record the result with a screenshot and UI tree on failure, run its clean-ups. After: sweep again, summary.md and run.json.</desc>
+  <style>
+    .bg { fill: #ffffff; }
+    .panel { fill: #f6f8fa; stroke: #d0d7de; }
+    .box { fill: #ffffff; stroke: #8c959f; }
+    .accent { fill: #ddf4ff; stroke: #0969da; }
+    .title { font: 600 15px system-ui, -apple-system, 'Segoe UI', sans-serif; fill: #1f2328; }
+    .name { font: 600 13px system-ui, -apple-system, 'Segoe UI', sans-serif; fill: #1f2328; }
+    .note { font: 12px system-ui, -apple-system, 'Segoe UI', sans-serif; fill: #59636e; }
+    .line { stroke: #59636e; stroke-width: 1.5; fill: none; }
+    .dash { stroke: #0969da; stroke-width: 1.5; fill: none; stroke-dasharray: 5 4; }
+    .label { font: 11px system-ui, -apple-system, 'Segoe UI', sans-serif; fill: #0969da; }
+    .head { fill: #59636e; }
+    .headaccent { fill: #0969da; }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #0d1117; }
+      .panel { fill: #161b22; stroke: #30363d; }
+      .box { fill: #0d1117; stroke: #6e7681; }
+      .accent { fill: #0c2d4a; stroke: #4493f8; }
+      .title, .name { fill: #e6edf3; }
+      .note { fill: #9198a1; }
+      .line { stroke: #9198a1; }
+      .dash { stroke: #4493f8; }
+      .label { fill: #4493f8; }
+      .head { fill: #9198a1; }
+      .headaccent { fill: #4493f8; }
+    }
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" class="head" />
+    </marker>
+    <marker id="arrowaccent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" class="headaccent" />
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="960" height="250" rx="12" />
+  <text class="title" x="130" y="40" text-anchor="middle">before the tests</text>
+  <rect class="box" x="20" y="60" width="220" height="46" rx="6" />
+  <text class="name" x="130" y="79" text-anchor="middle">plan</text>
+  <text class="note" x="130" y="97" text-anchor="middle">which tests, in what order</text>
+  <rect class="box" x="20" y="118" width="220" height="46" rx="6" />
+  <text class="name" x="130" y="137" text-anchor="middle">preflight</text>
+  <text class="note" x="130" y="155" text-anchor="middle">device, app, Appium, Metro</text>
+  <rect class="box" x="20" y="176" width="220" height="46" rx="6" />
+  <text class="name" x="130" y="195" text-anchor="middle">sweep</text>
+  <text class="note" x="130" y="213" text-anchor="middle">what earlier runs left (your hook)</text>
+  <path class="line" d="M130,106 L130,116" marker-end="url(#arrow)" />
+  <path class="line" d="M130,164 L130,174" marker-end="url(#arrow)" />
+  <rect class="panel" x="290" y="20" width="400" height="216" rx="10" />
+  <text class="title" x="490" y="44" text-anchor="middle">for every test, one after another</text>
+  <rect class="box" x="310" y="60" width="340" height="46" rx="6" />
+  <text class="name" x="480" y="79" text-anchor="middle">run it</text>
+  <text class="note" x="480" y="97" text-anchor="middle">every request timed: a frozen app is killed</text>
+  <rect class="box" x="310" y="118" width="340" height="46" rx="6" />
+  <text class="name" x="480" y="137" text-anchor="middle">record the result</text>
+  <text class="note" x="480" y="155" text-anchor="middle">screenshot and UI tree when it fails</text>
+  <rect class="box" x="310" y="176" width="340" height="46" rx="6" />
+  <text class="name" x="480" y="195" text-anchor="middle">clean up</text>
+  <text class="note" x="480" y="213" text-anchor="middle">what the test registered, passed or not</text>
+  <path class="line" d="M480,106 L480,116" marker-end="url(#arrow)" />
+  <path class="line" d="M480,164 L480,174" marker-end="url(#arrow)" />
+  <path class="line" d="M650,199 C676,199 676,83 652,83" marker-end="url(#arrow)" />
+  <path class="line" d="M690,128 C715,128 715,83 738,83" marker-end="url(#arrow)" />
+  <path class="line" d="M240,199 C265,199 265,83 308,83" marker-end="url(#arrow)" />
+  <text class="title" x="840" y="40" text-anchor="middle">after the tests</text>
+  <rect class="box" x="740" y="60" width="200" height="46" rx="6" />
+  <text class="name" x="840" y="88" text-anchor="middle">sweep again</text>
+  <rect class="accent" x="740" y="118" width="200" height="104" rx="6" />
+  <text class="name" x="840" y="148" text-anchor="middle">out/&lt;run&gt;/</text>
+  <text class="note" x="840" y="166" text-anchor="middle">summary.md</text>
+  <text class="note" x="840" y="184" text-anchor="middle">run.json, JUnit XML</text>
+  <text class="note" x="840" y="202" text-anchor="middle">screenshots, UI trees</text>
+  <path class="line" d="M840,106 L840,116" marker-end="url(#arrow)" />
+</svg>
