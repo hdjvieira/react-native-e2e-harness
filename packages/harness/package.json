@@ -42,16 +42,19 @@
   "files": [
     "dist",
     "dashboard",
+    "ai",
     "README.md"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "prepack": "yarn build",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test src/*.test.ts src/device-cli/*.test.ts src/dashboard/*.test.ts"
+    "test": "tsx --test src/*.test.ts src/device-cli/*.test.ts src/dashboard/*.test.ts",
+    "sync-skill": "tsx src/sync-skill.ts"
   },
   "dependencies": {
     "@types/mocha": "^10.0.10",
+    "@types/node": ">=20.12",
     "@wdio/cli": "^9.33.1",
     "@wdio/globals": "^9.33.1",
     "@wdio/junit-reporter": "^9.33.1",
@@ -69,7 +72,6 @@
     "react-native": ">=0.72"
   },
   "devDependencies": {
-    "@types/node": "20.19.43",
     "@wdio/types": "9.33.1",
     "typescript": "6.0.3"
   },

@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { register } from 'tsx/esm/api'
+import { dirname, relative, sep } from 'node:path'
 import { loadConfig } from './config.js'
 
 // e2e-harness <command> [--config <path>]
@@ -20,6 +21,8 @@ import { loadConfig } from './config.js'
 // or the app's package.json ("e2e-harness": { "config": "…" }), or pass --config.
 
 const USAGE = `usage: e2e-harness <command> [--config <path>]
+  init [--dir e2e]    the e2e folder and package.json entries, for a new app
+  ai [--tool agents]  the e2e runbook for an AI assistant (claude, agents, cursor, copilot)
   run [--spec <file>]... [--grep <re>] [--invert]   run the specs on a device
   api                 the specs that need no device (config api.specs)
   preflight           get the device, Appium and Metro ready, or say why not
@@ -38,6 +41,32 @@ async function main(argv: string[]) {
   const [command, ...rest] = argv
   // the app's config is TypeScript
   register()
+
+  // these two work before there is a config
+  if (command === 'init') {
+    const { describeInit, init } = await import('./init.js')
+    const at = rest.indexOf('--dir')
+    console.log(
+      describeInit(init({ folder: at >= 0 ? rest[at + 1] : undefined })),
+    )
+    return
+  }
+  if (command === 'ai') {
+    const { TOOLS, writeFor } = await import('./ai.js')
+    const { appRoot } = await import('./init.js')
+    const { findConfig } = await import('./config.js')
+    const at = rest.indexOf('--tool')
+    const tool = (at >= 0 ? rest[at + 1] : 'agents') as (typeof TOOLS)[number]
+    if (!TOOLS.includes(tool))
+      throw new Error(`--tool: one of ${TOOLS.join(', ')}`)
+    const appDir = appRoot()
+    const found = configPath ?? findConfig()
+    const folder = found
+      ? relative(appDir, dirname(found)).split(sep).join('/')
+      : undefined
+    console.log(`wrote ${writeFor(tool, appDir, folder)}`)
+    return
+  }
   if (command !== 'slow-net') await loadConfig(configPath)
 
   switch (command) {

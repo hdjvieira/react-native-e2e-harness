@@ -31,3 +31,7 @@ GitHub issues are the backlog. When work leaves a gap behind (a missing feature,
 ## Docs
 
 Show, don't just tell: use Mermaid diagrams (they render on GitHub) for flows, architecture and sequences, and keep prose for what a picture can't say.
+
+## The AI runbook
+
+One source: `packages/harness/ai/e2e.md` (and `e2e.description.txt`). The Claude Code plugin's `plugin/skills/e2e/SKILL.md` is generated from it with `yarn workspace react-native-e2e-harness sync-skill`; a test fails when they drift. `e2e-harness ai` writes the other tools' copies into an app.
