@@ -60,7 +60,7 @@ representative at an online or offline event.
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
 reported to the community leaders responsible for enforcement at
-the maintainer, privately: GitHub's private vulnerability reporting on this repository (Security tab), or a direct message to @hdjvieira on GitHub.
+the maintainer, privately, through GitHub's private reporting on this repository (the Security tab, "Report a vulnerability"; say it is a conduct report).
 All complaints will be reviewed and investigated promptly and fairly.
 
 All community leaders are obligated to respect the privacy and security of the
