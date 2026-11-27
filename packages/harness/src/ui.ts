@@ -127,17 +127,53 @@ export async function onScreen(testID: string) {
   return { rect, inside }
 }
 
-export async function swipe(fromY: number, toY: number, x?: number) {
+/**
+ * A vertical swipe, in pixels. `hold` keeps the finger down at the end, so
+ * a slow drag doesn't fling: a scroll view inside a bottom sheet takes a
+ * quick throw for a gesture on the sheet itself.
+ */
+export async function swipe(
+  fromY: number,
+  toY: number,
+  {
+    x,
+    duration = 400,
+    hold = 0,
+  }: { x?: number; duration?: number; hold?: number } = {},
+) {
   const { width } = await driver.getWindowSize()
   const at = x ?? Math.round(width / 2)
-  await driver
+  let gesture = driver
     .action('pointer', { parameters: { pointerType: 'touch' } })
     .move({ x: at, y: fromY })
     .down()
-    .move({ x: at, y: toY, duration: 400 })
-    .up()
-    .perform()
-  await driver.pause(600)
+    .move({ x: at, y: toY, duration })
+  if (hold) gesture = gesture.pause(hold)
+  await gesture.up().perform()
+  await driver.pause(hold ? 500 : 600)
+}
+
+/**
+ * A slow drag between two heights given as shares of the screen (0 the top,
+ * 1 the bottom), held at its end so it doesn't fling: for sheets and nested
+ * scroll views. Keep it well clear of the edges, where a phone with gesture
+ * navigation takes a swipe for Back or Home.
+ */
+export async function drag(
+  from: number,
+  to: number,
+  {
+    x,
+    duration = 500,
+    hold = 300,
+  }: { x?: number; duration?: number; hold?: number } = {},
+) {
+  const { height } = await driver.getWindowSize()
+  await swipe(Math.round(height * from), Math.round(height * to), {
+    x,
+    duration,
+    hold,
+  })
 }
 
 /**
@@ -150,18 +186,45 @@ export async function swipe(fromY: number, toY: number, x?: number) {
  * says which way to go. iOS lists a page's rows whether on screen or not, so
  * one missing there fails after a short wait, unless the list is `growing`
  * (it loads more as it scrolls).
+ *
+ * In a bottom sheet or under a sticky header: `below` is the testID whose
+ * bottom edge is the top of the scrolling area (a row under it still reports
+ * on-screen bounds), and `slow` scrolls in short, held drags, so a sheet takes
+ * them for scrolls and a row can't pass through the view between two looks.
+ * Pull a half-height sheet to full height first: there a drag down moves the
+ * sheet, not its content.
  */
 export async function scrollTo(
   testID: string,
   page: string,
-  { maxSwipes = 8, growing = false } = {},
+  {
+    maxSwipes = 8,
+    growing = false,
+    below,
+    slow = false,
+  }: {
+    maxSwipes?: number
+    growing?: boolean
+    below?: string
+    slow?: boolean
+  } = {},
 ) {
   await waitFor(page, 15000)
   const { height } = await driver.getWindowSize()
-  const top = height * 0.12
   const bottom = height * 0.9
+  const down = () =>
+    slow
+      ? drag(0.8, 0.62)
+      : swipe(Math.round(height * 0.7), Math.round(height * 0.4))
+  const up = () =>
+    slow
+      ? drag(0.55, 0.72)
+      : swipe(Math.round(height * 0.35), Math.round(height * 0.65))
   let lastY: number | undefined
-  for (let i = 0; i <= maxSwipes; i++) {
+  for (let i = 0; i <= (slow ? maxSwipes * 3 : maxSwipes); i++) {
+    const top = below
+      ? await onScreen(below).then(({ rect }) => rect.y + rect.height + 8)
+      : height * 0.12
     if (!(await exists(testID))) {
       if (!driver.isAndroid && !growing) {
         if (
@@ -173,7 +236,7 @@ export async function scrollTo(
           continue
         throw new Error(`"${testID}" is not on "${page}"`)
       }
-      await swipe(Math.round(height * 0.7), Math.round(height * 0.4))
+      await down()
       continue
     }
     const { inside, rect } = await onScreen(testID)
@@ -181,13 +244,44 @@ export async function scrollTo(
     // the page's end: it can't scroll any further, and the element is in view
     if (rect.y === lastY && inside) return el(testID)
     lastY = rect.y
-    if (rect.y < top) {
-      await swipe(Math.round(height * 0.35), Math.round(height * 0.65))
-    } else {
-      await swipe(Math.round(height * 0.7), Math.round(height * 0.4))
-    }
+    await (rect.y < top ? up() : down())
   }
-  throw new Error(`"${testID}" is not on screen after ${maxSwipes} swipes`)
+  throw new Error(`"${testID}" is not on screen after scrolling "${page}"`)
+}
+
+/**
+ * Every testID a scrolling page renders, top to bottom, in one pass: far
+ * cheaper than a scrollTo() per row when a test checks many of them. Android
+ * leaves rows outside the view out of the tree, so the ids are gathered at
+ * each step of a slow scroll down until `end` (the page's last element) is
+ * in and a step brings nothing new. `eachStep` runs before every look (pull
+ * a sheet back to full height, say).
+ */
+export async function collectIds(
+  end: string,
+  {
+    maxSwipes = 15,
+    eachStep,
+  }: { maxSwipes?: number; eachStep?: () => Promise<void> } = {},
+) {
+  const attribute = driver.isAndroid ? 'resource-id' : 'name'
+  const prefix = driver.isAndroid ? `${appId('android')}:id/` : ''
+  const ids = new Set<string>()
+  let before = -1
+  for (let i = 0; i <= maxSwipes; i++) {
+    await eachStep?.()
+    const source = await driver.getPageSource()
+    for (const [, id] of source.matchAll(
+      new RegExp(`\\s${attribute}="([^"]+)"`, 'g'),
+    )) {
+      ids.add(id.startsWith(prefix) ? id.slice(prefix.length) : id)
+    }
+    if (ids.has(end) && ids.size === before) return ids
+    before = ids.size
+    await drag(0.8, 0.5)
+  }
+  if (!ids.has(end)) throw new Error(`never scrolled down to "${end}"`)
+  return ids
 }
 
 const escapeRegex = (text: string) =>
