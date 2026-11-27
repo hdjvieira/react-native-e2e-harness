@@ -16,6 +16,8 @@ export const DASHBOARD_PORT =
 export const TITLE = config().dashboard?.title ?? basename(config().appDir)
 /** the app's WebdriverIO config, run by the dashboard's Run button */
 export const WDIO_CONFIG = config().dashboard?.wdioConfig ?? 'wdio.conf.ts'
+/** the app's own tags and what they mean */
+export const APP_TAGS = config().dashboard?.tags ?? {}
 
 const here = dirname(fileURLToPath(import.meta.url))
 /** the page's files: next to the package's dist/ and src/ */

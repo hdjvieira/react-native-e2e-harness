@@ -162,7 +162,7 @@ flowchart LR
   S -->|starts| W
 ```
 
-A run opens it by itself: it starts the server in a window of its own when none answers, and opens the page on the run unless one is already open (`E2E_UI=off` leaves it out, and so does CI). Or start it with `npx e2e-harness dashboard`. It listens on port 4777 (`dashboard.port` in the config, or `E2E_DASHBOARD_PORT`); `dashboard.title` names it.
+A run opens it by itself: it starts the server in a window of its own when none answers, and opens the page on the run unless one is already open (`E2E_UI=off` leaves it out, and so does CI). Or start it with `npx e2e-harness dashboard`. It listens on port 4777 (`dashboard.port` in the config, or `E2E_DASHBOARD_PORT`); `dashboard.title` names it, and `dashboard.tags` says what your own tags mean (`{ '#slow': 'Takes minutes' }`), shown when the mouse is on a tag.
 
 ## With Claude Code
 

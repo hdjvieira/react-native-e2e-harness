@@ -21,6 +21,7 @@ import {
   E2E_DIR,
   METRO_PORT,
   OUT_DIR,
+  APP_TAGS,
   PUBLIC,
   TITLE,
 } from './env.js'
@@ -195,6 +196,7 @@ async function statusPayload() {
   ])
   return {
     server: { up: true, port: DASHBOARD_PORT, dir: E2E_DIR, title: TITLE },
+    tags: APP_TAGS,
     appium: { up: appium, port: APPIUM_PORT },
     // an app without Metro: the page leaves its pill out
     metro: METRO_PORT ? { up: metro, port: METRO_PORT } : undefined,

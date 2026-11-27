@@ -140,6 +140,8 @@ export type HarnessConfig = {
     title?: string
     /** the app's WebdriverIO config, run by its Run button; default wdio.conf.ts */
     wdioConfig?: string
+    /** what the app's own tags mean (`#slow`: 'Takes minutes'), shown on their chips */
+    tags?: Record<string, string>
   }
 
   hooks?: {

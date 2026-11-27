@@ -17,7 +17,7 @@ import * as launch from './launch.js'
 import * as matrix from './matrix.js'
 import * as overview from './overview.js'
 import * as run from './run.js'
-import { api, esc, load, post, RUN, save } from './util.js'
+import { api, esc, load, post, RUN, save, setAppTags } from './util.js'
 
 const PAGES = { overview, launch, history, run, flaky, matrix }
 
@@ -274,6 +274,7 @@ async function pollShell() {
     api('status')
       .then(status => {
         shell.status = status
+        setAppTags(status.tags)
         renderShell()
       })
       .catch(() => {})
