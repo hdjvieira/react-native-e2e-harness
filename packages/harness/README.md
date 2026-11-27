@@ -2,18 +2,18 @@
 
 End-to-end tests for React Native apps on Appium and WebdriverIO, with the runner around them: a preflight that gets the device ready or says why it can't, one summary per run, chained tests, a watchdog for a frozen app, clean-up of what tests write, and reports that prune themselves.
 
-> Not on npm yet: install it from GitHub (below). An example app runs its specs with it on an Android emulator in CI ([roadmap](https://github.com/hdjvieira/react-native-e2e-harness/issues/9)).
+> Extracted from the test suite of a production React Native app. An example app runs its specs with it on an Android emulator in CI ([source and issues](https://github.com/hdjvieira/react-native-e2e-harness)).
 
 ## Quick start
 
 1. **Install** it as a dev dependency (it brings WebdriverIO and Mocha with it), and Appium once per machine:
 
    ```sh
-   yarn add -D "react-native-e2e-harness@github:hdjvieira/react-native-e2e-harness#workspace=react-native-e2e-harness"
+   yarn add -D react-native-e2e-harness
    npm install -g appium && appium driver install uiautomator2   # iOS too: appium driver install xcuitest
    ```
 
-   (npm, pnpm and bun work the same. Until the first release, the package comes from this repo.)
+   (or `npm install -D`, `pnpm add -D`, `bun add -d`)
 
 2. **Set it up** in the app's root. `init` reads your app ids from the native projects (or Expo's `app.json`), creates the `e2e/` folder and adds one script:
 
@@ -39,6 +39,7 @@ your-app/
 ├── package.json        + 1 devDependency, 1 script ("e2e"), 1 field ("e2e-harness")
 ├── App.tsx             + optional: createE2ESwitches(...), debug builds only
 └── e2e/                new; commit it
+    ├── package.json    { "type": "module" }: the folder is ES modules, whatever the app is
     ├── e2e.config.ts   app ids, start screen, hooks into your support code
     ├── wdio.conf.ts    one line
     ├── tsconfig.json   its own: Mocha's types, kept apart from the app's Jest
@@ -56,7 +57,7 @@ Nothing native, nothing in a release bundle (the in-app module only loads under 
 
 ## Set up by hand
 
-What `init` writes, if you would rather write it yourself:
+What `init` writes, if you would rather write it yourself. The folder also gets a `package.json` of `{ "type": "module" }`: its files are ES modules (the config reads `import.meta`), whatever the app is.
 
 An `e2e/` folder in the app with three files:
 

@@ -10,7 +10,13 @@ import {
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { after, it } from 'node:test'
-import { describeInit, detectApp, init, packageManager } from './init.js'
+import {
+  appRoot,
+  describeInit,
+  detectApp,
+  init,
+  packageManager,
+} from './init.js'
 
 const app = mkdtempSync(join(tmpdir(), 'harness-init-'))
 after(() => rmSync(app, { recursive: true, force: true }))
@@ -48,6 +54,13 @@ it("reads the app's ids from its native projects", () => {
 it('creates the e2e folder and the package.json entries, and keeps what is there', () => {
   const first = init({}, join(app, 'android'))
   assert.ok(first.created.includes('e2e/e2e.config.ts'))
+  assert.deepEqual(
+    JSON.parse(readFileSync(join(app, 'e2e/package.json'), 'utf8')),
+    {
+      private: true,
+      type: 'module',
+    },
+  )
   assert.match(
     readFileSync(join(app, 'e2e/e2e.config.ts'), 'utf8'),
     /package: 'com\.myapp\.debug', namespace: 'com\.myapp'/,
@@ -67,4 +80,6 @@ it('creates the e2e folder and the package.json entries, and keeps what is there
   assert.equal(again.created.length, 0)
   assert.equal(again.packageJson.length, 0)
   assert.ok(existsSync(join(app, 'e2e/support/README.md')))
+  // the e2e folder's own package.json is not the app's root
+  assert.equal(appRoot(join(app, 'e2e', 'specs')), app)
 })

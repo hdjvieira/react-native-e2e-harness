@@ -1,0 +1,40 @@
+name: Release
+
+# Pushing a tag vX.Y.Z publishes packages/harness at that version to npm,
+# through npm's trusted publishing (no token in the repo; npm adds the
+# provenance). The tag must match the version in packages/harness/package.json;
+# a version already on npm is skipped.
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          registry-url: https://registry.npmjs.org
+      - run: corepack enable
+      - run: yarn install --immutable
+      - run: yarn verify
+      # trusted publishing needs npm 11.5 or later
+      - run: npm install -g npm@11
+      - name: Publish
+        working-directory: packages/harness
+        run: |
+          version=$(node -p "require('./package.json').version")
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "tag $GITHUB_REF_NAME does not match package version $version"; exit 1
+          fi
+          if npm view "react-native-e2e-harness@$version" version >/dev/null 2>&1; then
+            echo "$version is on npm already: nothing to publish"; exit 0
+          fi
+          npm publish --access public
