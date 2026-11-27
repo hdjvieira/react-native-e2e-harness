@@ -51,24 +51,26 @@
     "test": "tsx --test src/*.test.ts src/device-cli/*.test.ts src/dashboard/*.test.ts"
   },
   "dependencies": {
-    "tsx": "4.23.15"
+    "@types/mocha": "^10.0.10",
+    "@wdio/cli": "^9.33.1",
+    "@wdio/globals": "^9.33.1",
+    "@wdio/local-runner": "^9.33.1",
+    "@wdio/logger": "^9.33.1",
+    "@wdio/mocha-framework": "^9.33.1",
+    "@wdio/spec-reporter": "^9.33.1",
+    "expect-webdriverio": "^7.0.1",
+    "mocha": "^10.8.2",
+    "tsx": "^4.23.15",
+    "webdriverio": "^9.33.1"
   },
   "peerDependencies": {
-    "@wdio/globals": ">=9",
-    "mocha": ">=10",
     "react": ">=18",
-    "react-native": ">=0.72",
-    "webdriverio": ">=9"
+    "react-native": ">=0.72"
   },
   "devDependencies": {
-    "@types/mocha": "10.0.10",
     "@types/node": "20.19.43",
-    "@wdio/globals": "9.33.1",
-    "@wdio/mocha-framework": "9.33.1",
     "@wdio/types": "9.33.1",
-    "mocha": "10.8.2",
-    "typescript": "6.0.3",
-    "webdriverio": "9.33.1"
+    "typescript": "6.0.3"
   },
   "peerDependenciesMeta": {
     "react": {

@@ -5,12 +5,12 @@ description: Drive a React Native app on an Android emulator or device, an iOS s
 
 # Testing the app on a device
 
-The app's e2e folder (where `e2e.config.ts` is, often `e2e/`) holds everything that drives the app. Read its config first: the app ids, the starting screen (`home`), the dev link, the hooks. If the folder has its own notes (a README, a list of flows), read them before adding anything.
+The app's e2e folder (where `e2e.config.ts` is, often `e2e/`) holds everything that drives the app. Every command goes through the app's `e2e` script (`yarn e2e …`, or `npx e2e-harness …` in an app without one). Read the config first: the app ids, the starting screen (`home`), the dev link, the hooks. If the folder has its own notes (a README, a list of flows), read them before adding anything.
 
 |             | Specs                                          | Ad-hoc checks                                                       |
 | ----------- | ---------------------------------------------- | ------------------------------------------------------------------- |
 | What        | flow tests, kept and re-run (`specs/`)         | one command at a time, for a check not (yet) worth a spec           |
-| Tool        | `wdio run wdio.conf.ts` (the harness's runner) | `npx e2e-harness device …`, `ios-device …`, `slow-net …`            |
+| Tool        | `yarn e2e run`                                 | `yarn e2e device …`, `ios-device …`, `slow-net …`                   |
 | Device      | an emulator or simulator by default            | the connected device, often the developer's phone                   |
 | Typical use | after a feature, before a bug fix, regressions | verifying a change by hand, timing a loader, exploring a flow first |
 
@@ -26,7 +26,7 @@ Both verify by **testID** in the UI tree, not by screenshots, which cost far mor
 ## 1. Preflight
 
 ```bash
-npx e2e-harness preflight
+yarn e2e preflight
 ```
 
 It fixes what it can and stops, with the reason, on what it can't:
@@ -42,29 +42,29 @@ On iOS, the first session builds WebDriverAgent onto the device (about a minute)
 ## 2. Run specs
 
 ```bash
-npx wdio run wdio.conf.ts                                       # every spec
-npx wdio run wdio.conf.ts --spec specs/login.e2e.ts             # one spec
-npx wdio run wdio.conf.ts --mochaOpts.grep "#slow" --mochaOpts.invert   # skip a tag (quoted: # starts a shell comment)
+yarn e2e run                                   # every spec
+yarn e2e run --spec specs/login.e2e.ts         # one spec
+yarn e2e run --grep "#slow" --invert           # skip a tag (quoted: # starts a shell comment)
 ```
 
 Run it in the background and wait to be told it ended. Every run: preflight → sweep → specs → sweep → summary, saved as `out/<run>/summary.md`. A failed test leaves a screenshot and the UI tree (`.png` / `.xml`) next to it: **read those before rerunning anything.**
 
 - **App froze:** a request with no answer in 45 s gets the app killed from outside, the test fails as "app froze", and its retry starts fresh. Each freeze has its own section in the summary and is never just a flaky retry: report it as a possible app bug, with the step.
 - **Release:** the summary starts with what was tested (the release the commit belongs to, the app build, branch, commit, uncommitted changes). Say which release when you report.
-- **Old reports prune themselves** once their commit is released and nothing in them is still open. `npx e2e-harness reports` lists them.
-- **A killed run skips its clean-ups:** run `npx e2e-harness sweep`. Stopping a background shell task does not stop WDIO's node processes: find them by command line (`wdio`, `local-runner`) and kill them first.
+- **Old reports prune themselves** once their commit is released and nothing in them is still open. `yarn e2e reports` lists them.
+- **A killed run skips its clean-ups:** run `yarn e2e sweep`. Stopping a background shell task does not stop WDIO's node processes: find them by command line (`wdio`, `local-runner`) and kill them first.
 - **A spec that opens another app closes it afterwards** (the browser, a share target, Settings), or it is what Android shows when a later spec kills the app.
 
 **Report:** the summary line, every failure with its cause (from the screenshot), every freeze, every clean-up that failed (never leave one silent). Tests under **Needs a person first** are a to-do for the developer (what to do on the device), not failures.
 
 ### The dashboard
 
-Every run opens `http://localhost:4777` (or starts it in a window of its own): the live run with its ETA, past runs with their failures and screenshots, flaky tests, a module-by-device matrix; it also starts and queues runs. `npx e2e-harness dashboard` starts it by hand; `E2E_UI=off` keeps runs from opening it. When you start a run for the developer, tell them the page; when you report, the summary is the source of truth.
+Every run opens `http://localhost:4777` (or starts it in a window of its own): the live run with its ETA, past runs with their failures and screenshots, flaky tests, a module-by-device matrix; it also starts and queues runs. `yarn e2e dashboard` starts it by hand; `E2E_UI=off` keeps runs from opening it. When you start a run for the developer, tell them the page; when you report, the summary is the source of truth.
 
 ## 3. Ad-hoc checks
 
 1. **Plan the cases first**, as a table: case, how to reach it, the testID that proves it. Each needs a known starting state; say which ones need a data wipe (Consent).
-2. `npx e2e-harness device preflight`: one device (set `ANDROID_SERIAL` with several), a debug build, Metro serving **this** checkout, the port reversed. Fix every FAIL first.
+2. `yarn e2e device preflight`: one device (set `ANDROID_SERIAL` with several), a debug build, Metro serving **this** checkout, the port reversed. Fix every FAIL first.
 3. Drive it one command at a time (`device help` lists them all):
 
 | Command                                              | Use                                                                |
@@ -83,9 +83,9 @@ Every command first dismisses React Native's LogBox toasts, which take taps and 
 
 4. **Report** as a table: case, expected, result (with the time where timing matters). Then what was not tested and why, what you changed temporarily and put back, and the state the device was left in.
 
-**An iPhone:** `npx e2e-harness ios-device start` (unlocked, on a cable), then `tap`, `wait`, `has`, `text <id> [n]`, `link <url>`, `double-tap`, `two-finger-tap`, `drag` (`ios-device help`).
+**An iPhone:** `yarn e2e ios-device start` (unlocked, on a cable), then `tap`, `wait`, `has`, `text <id> [n]`, `link <url>`, `double-tap`, `two-finger-tap`, `drag` (`ios-device help`).
 
-**A slow or dead network** (Android): `npx e2e-harness slow-net --hosts '<regex>' --delay <ms> --for <ms>` holds HTTPS connections to matching hosts (`--fail` refuses them). Run it in the background **with `--for`** and let it end by itself: that is what puts the device's proxy back. Stopped from outside, the device is left with no internet: run `slow-net --restore` at once, and check `adb shell settings get global http_proxy` prints `:0` before you finish. To time a loader: make the held request outlast the tap, `tap <button> --watch <ms> <loader-id> <next-id>`, and line its epochs up with the proxy's `opened at`.
+**A slow or dead network** (Android): `yarn e2e slow-net --hosts '<regex>' --delay <ms> --for <ms>` holds HTTPS connections to matching hosts (`--fail` refuses them). Run it in the background **with `--for`** and let it end by itself: that is what puts the device's proxy back. Stopped from outside, the device is left with no internet: run `slow-net --restore` at once, and check `adb shell settings get global http_proxy` prints `:0` before you finish. To time a loader: make the held request outlast the tap, `tap <button> --watch <ms> <loader-id> <next-id>`, and line its epochs up with the proxy's `opened at`.
 
 ## 4. Add a spec
 
