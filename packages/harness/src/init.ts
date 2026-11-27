@@ -25,10 +25,17 @@ export type InitResult = {
   notes: string[]
 }
 
-/** the app's root: the nearest folder with a package.json */
+/**
+ * The app's root: the nearest folder with a package.json that is a package
+ * (a name or dependencies), not the e2e folder's own `{ "type": "module" }`
+ */
 export function appRoot(from = process.cwd()) {
   for (let dir = resolve(from); ; dir = dirname(dir)) {
-    if (existsSync(join(dir, 'package.json'))) return dir
+    const manifest = read(join(dir, 'package.json'))
+    if (manifest) {
+      const json = JSON.parse(manifest) as Record<string, unknown>
+      if (json.name || json.dependencies || json.devDependencies) return dir
+    }
     if (dirname(dir) === dir)
       throw new Error('no package.json here or above: run it inside the app')
   }
@@ -120,6 +127,10 @@ ${android}${ios}${missing}  // the screen every test starts from: a testID that 
 }
 
 const FILES: Record<string, (app: ReturnType<typeof detectApp>) => string> = {
+  // the e2e folder is ES modules whatever the app is: its config reads
+  // import.meta, and a CommonJS app would load it as CommonJS and fail
+  'package.json': () =>
+    JSON.stringify({ private: true, type: 'module' }, null, 2) + '\n',
   'e2e.config.ts': configFile,
   'wdio.conf.ts':
     () => `import { createWdioConfig } from 'react-native-e2e-harness'

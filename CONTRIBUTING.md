@@ -21,3 +21,7 @@ The harness has to work for any React Native app. Nothing specific to one app (i
 ## Code style
 
 TypeScript, ESM, Prettier with no semicolons, single quotes and trailing commas. `yarn format` fixes formatting.
+
+## Releases
+
+A release is a pull request that sets the new `version` in `packages/harness/package.json` (semver: a breaking change to the config, a helper or the CLI is a new major), then, once merged, a tag on `main`: `git tag vX.Y.Z && git push origin vX.Y.Z`. The **Release** workflow publishes it to npm.

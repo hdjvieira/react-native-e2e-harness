@@ -1,6 +1,6 @@
 {
   "name": "react-native-e2e-harness",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "End-to-end tests for React Native apps by testID: Appium + WebdriverIO runner, device plumbing, reports",
   "license": "MIT",
   "author": "Hugo Vieira",
@@ -9,6 +9,10 @@
     "type": "git",
     "url": "git+https://github.com/hdjvieira/react-native-e2e-harness.git",
     "directory": "packages/harness"
+  },
+  "homepage": "https://github.com/hdjvieira/react-native-e2e-harness#readme",
+  "bugs": {
+    "url": "https://github.com/hdjvieira/react-native-e2e-harness/issues"
   },
   "keywords": [
     "react-native",
@@ -82,5 +86,8 @@
     "react-native": {
       "optional": true
     }
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

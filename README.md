@@ -9,11 +9,11 @@ End-to-end tests for React Native apps, written against the app's own `testID`s.
 1. **Install** it as a dev dependency (it brings WebdriverIO and Mocha with it), and Appium once per machine:
 
    ```sh
-   yarn add -D "react-native-e2e-harness@github:hdjvieira/react-native-e2e-harness#workspace=react-native-e2e-harness"
+   yarn add -D react-native-e2e-harness
    npm install -g appium && appium driver install uiautomator2   # iOS too: appium driver install xcuitest
    ```
 
-   (npm, pnpm and bun work the same. Until the first release, the package comes from this repo.)
+   (or `npm install -D`, `pnpm add -D`, `bun add -d`)
 
 2. **Set it up** in the app's root. `init` reads your app ids from the native projects (or Expo's `app.json`), creates the `e2e/` folder and adds one script:
 
@@ -39,6 +39,7 @@ your-app/
 ├── package.json        + 1 devDependency, 1 script ("e2e"), 1 field ("e2e-harness")
 ├── App.tsx             + optional: createE2ESwitches(...), debug builds only
 └── e2e/                new; commit it
+    ├── package.json    { "type": "module" }: the folder is ES modules, whatever the app is
     ├── e2e.config.ts   app ids, start screen, hooks into your support code
     ├── wdio.conf.ts    one line
     ├── tsconfig.json   its own: Mocha's types, kept apart from the app's Jest
@@ -73,7 +74,7 @@ Everything about using it (the config, the helpers, the dashboard, the CLI, what
 - An app whose interactive elements carry `testID`s
 - iOS: a Mac with Xcode
 
-> **Status:** extracted from the test suite of a production React Native app; not on npm yet. Progress is tracked in the [issues](../../issues).
+> **Status:** on npm as [`react-native-e2e-harness`](https://www.npmjs.com/package/react-native-e2e-harness), extracted from the test suite of a production React Native app. Progress is tracked in the [issues](../../issues).
 
 ## Contributing
 
