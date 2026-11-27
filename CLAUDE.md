@@ -1,6 +1,6 @@
 # react-native-e2e-harness — maintainer notes for Claude
 
-The owner is Hugo (GitHub `hdjvieira`). Claude sessions and the Claude GitHub Action do most of the work here: code, issues, reviews, releases. These rules apply to all of them.
+The owner is Hugo (GitHub `hdjvieira`). Claude does most of the work here, in sessions the owner starts (and a scheduled maintainer run, once set up): code, issues, reviews, releases. Nobody can call Claude from an issue or a comment: there is no workflow for it, on purpose. These rules apply to every run.
 
 ## Trust
 

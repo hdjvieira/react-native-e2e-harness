@@ -109,7 +109,7 @@ Run it with `yarn e2e run`.
 
 ## What a run does
 
-<img src="../../docs/run.svg" alt="Before the tests: plan, preflight, sweep. For every test: run it with every request timed, record the result with a screenshot and UI tree on failure, clean up. After: sweep again and write out/run/" width="900">
+<img src="https://raw.githubusercontent.com/hdjvieira/react-native-e2e-harness/main/docs/run.svg" alt="Before the tests: plan, preflight, sweep. For every test: run it with every request timed, record the result with a screenshot and UI tree on failure, clean up. After: sweep again and write out/run/" width="900">
 
 Everything a run writes goes to `out/<run>/`: `summary.md` to read, plus `run.json`, `results.jsonl`, `events.jsonl`, `timing.jsonl` and the failure artifacts.
 
@@ -133,7 +133,7 @@ if (__DEV__) {
 }
 ```
 
-<img src="../../docs/restart.svg" alt="restartApp: a JS reload through the dev link in a debug build with the app in front, else a cold start; then through home.through, home.overlays and permission prompts to home.ready" width="900">
+<img src="https://raw.githubusercontent.com/hdjvieira/react-native-e2e-harness/main/docs/restart.svg" alt="restartApp: a JS reload through the dev link in a debug build with the app in front, else a cold start; then through home.through, home.overlays and permission prompts to home.ready" width="900">
 
 Built-in switches: `reload=<id>` (once-only), `logbox=off` (LogBox toasts take taps a test can't see), `keyboard=dismiss` (iOS has no reliable way otherwise). Your flags are set with `name=on|off|<value>` and read with the returned `flags`, `useFlag(name)` or `onChange()`; your actions run with the parameter's value. Without a dev link, every restart is a cold start.
 
@@ -173,7 +173,7 @@ Tags are `#words` in test titles. `#android`, `#ios`, `#on-android-emulator-only
 
 A local web page over the run folders: the run going on (with an ETA from past runs), every past run with its failures, screenshots and UI trees, flaky tests, and a module-by-device matrix. It also starts runs: pick tests and a device, queue the next run while one goes on, rerun what failed.
 
-<img src="../../docs/dashboard.svg" alt="A run writes its files into out/, the dashboard server reads them and answers the page, which polls every second; Run, Queue and Stop go back to the server, which starts runs" width="900">
+<img src="https://raw.githubusercontent.com/hdjvieira/react-native-e2e-harness/main/docs/dashboard.svg" alt="A run writes its files into out/, the dashboard server reads them and answers the page, which polls every second; Run, Queue and Stop go back to the server, which starts runs" width="900">
 
 A run opens it by itself: it starts the server in a window of its own when none answers, and opens the page on the run unless one is already open (`E2E_UI=off` leaves it out, and so does CI). Or start it with `yarn e2e dashboard`. It listens on port 4777 (`dashboard.port` in the config, or `E2E_DASHBOARD_PORT`); `dashboard.title` names it, and `dashboard.tags` says what your own tags mean (`{ '#slow': 'Takes minutes' }`), shown when the mouse is on a tag.
 
